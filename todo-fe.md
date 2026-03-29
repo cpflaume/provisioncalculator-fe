@@ -6,12 +6,12 @@
 - [x] Tailwind CSS installieren und konfigurieren
 - [x] shadcn/ui Setup (components.json, erste Basis-Komponenten)
 - [x] React Router v6 einrichten
-- [ ] TanStack Query (React Query) einrichten
-- [ ] reactflow installieren
-- [ ] Recharts installieren
-- [ ] Lucide React Icons installieren
-- [ ] `.env` / `.env.example` mit `VITE_API_BASE_URL` anlegen
-- [ ] `.gitignore` erstellen
+- [x] TanStack Query (React Query) einrichten
+- [x] reactflow installieren
+- [x] Recharts installieren
+- [x] Lucide React Icons installieren
+- [x] `.env` / `.env.example` mit `VITE_API_BASE_URL` anlegen
+- [x] `.gitignore` erstellen
 - [ ] API-Client (`api/client.ts`) — zentraler fetch-Wrapper mit tenantId + baseURL
 - [ ] TypeScript-Interfaces für alle API-Responses (`api/types.ts`)
 - [ ] API-Funktionen: Settlements (`api/settlements.ts`)
