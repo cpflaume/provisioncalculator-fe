@@ -18,9 +18,9 @@
 - [x] API-Funktionen: Purchases (`api/purchases.ts`)
 - [x] API-Funktionen: Calculations (`api/calculations.ts`)
 - [x] Tenant-Context/Hook (`hooks/useTenant.ts`)
-- [ ] AppShell Layout (`components/layout/AppShell.tsx`) — Sidebar + Header + Main
-- [ ] Sidebar Navigation (`components/layout/Sidebar.tsx`)
-- [ ] TenantSelector im Header (`components/layout/TenantSelector.tsx`)
+- [x] AppShell Layout (`components/layout/AppShell.tsx`) — Sidebar + Header + Main
+- [x] Sidebar Navigation (`components/layout/Sidebar.tsx`)
+- [x] TenantSelector im Header (`components/layout/TenantSelector.tsx`)
 
 ## Phase 2: Dashboard
 
