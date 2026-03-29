@@ -3,7 +3,7 @@
 ## Phase 1: Projekt-Setup & Grundgerüst
 
 - [x] Vite + React + TypeScript Projekt initialisieren
-- [ ] Tailwind CSS installieren und konfigurieren
+- [x] Tailwind CSS installieren und konfigurieren
 - [ ] shadcn/ui Setup (components.json, erste Basis-Komponenten)
 - [ ] React Router v6 einrichten
 - [ ] TanStack Query (React Query) einrichten
