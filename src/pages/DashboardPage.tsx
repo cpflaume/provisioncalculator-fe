@@ -1,8 +1,12 @@
+import { AppShell } from "@/components/layout/AppShell"
+
 export function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold text-gray-900">Provisionsrechner</h1>
-      <p className="mt-2 text-gray-500">Abrechnungen verwalten</p>
-    </div>
+    <AppShell>
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Abrechnungen</h2>
+        <p className="mt-1 text-sm text-gray-500">Alle Abrechnungsperioden im Überblick</p>
+      </div>
+    </AppShell>
   )
 }

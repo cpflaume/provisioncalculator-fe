@@ -1,11 +1,14 @@
 import { useParams } from "react-router-dom"
+import { AppShell } from "@/components/layout/AppShell"
 
 export function SettlementPage() {
   const { id } = useParams<{ id: string }>()
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-2xl font-bold text-gray-900">Abrechnung #{id}</h1>
-    </div>
+    <AppShell>
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">Abrechnung #{id}</h2>
+      </div>
+    </AppShell>
   )
 }
