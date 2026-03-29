@@ -16,7 +16,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
     throw new ApiError(response.status, message)
   }
   if (response.status === 204) return undefined as T
-  return response.json()
+  const contentType = response.headers.get("content-type")
+  if (contentType?.includes("application/json")) {
+    return response.json()
+  }
+  return undefined as T
 }
 
 function buildUrl(tenantId: string, path: string): string {
