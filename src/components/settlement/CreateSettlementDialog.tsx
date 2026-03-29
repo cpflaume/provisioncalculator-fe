@@ -45,7 +45,7 @@ export function CreateSettlementDialog({ open, onOpenChange, onSubmit, isLoading
             />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={() => { setName(""); onOpenChange(false) }}>
               Abbrechen
             </Button>
             <Button type="submit" disabled={!name.trim() || isLoading}>

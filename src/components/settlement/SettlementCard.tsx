@@ -18,7 +18,7 @@ export function SettlementCard({ settlement }: SettlementCardProps) {
 
   return (
     <Card
-      className="cursor-pointer transition-shadow hover:shadow-md"
+      className="cursor-pointer transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none"
       onClick={() => navigate(`/settlements/${settlement.id}`)}
       role="button"
       tabIndex={0}
