@@ -10,7 +10,7 @@ export function Sidebar() {
   const location = useLocation()
 
   return (
-    <aside className="w-60 border-r border-gray-200 bg-white flex flex-col">
+    <aside className="w-60 border-r border-gray-200 bg-white flex flex-col" aria-label="Hauptnavigation">
       <div className="p-4 border-b border-gray-200">
         <h1 className="text-lg font-bold text-gray-900">Provisionsrechner</h1>
       </div>
