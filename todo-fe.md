@@ -12,12 +12,12 @@
 - [x] Lucide React Icons installieren
 - [x] `.env` / `.env.example` mit `VITE_API_BASE_URL` anlegen
 - [x] `.gitignore` erstellen
-- [ ] API-Client (`api/client.ts`) — zentraler fetch-Wrapper mit tenantId + baseURL
-- [ ] TypeScript-Interfaces für alle API-Responses (`api/types.ts`)
-- [ ] API-Funktionen: Settlements (`api/settlements.ts`)
-- [ ] API-Funktionen: Purchases (`api/purchases.ts`)
-- [ ] API-Funktionen: Calculations (`api/calculations.ts`)
-- [ ] Tenant-Context/Hook (`hooks/useTenant.ts`)
+- [x] API-Client (`api/client.ts`) — zentraler fetch-Wrapper mit tenantId + baseURL
+- [x] TypeScript-Interfaces für alle API-Responses (`api/types.ts`)
+- [x] API-Funktionen: Settlements (`api/settlements.ts`)
+- [x] API-Funktionen: Purchases (`api/purchases.ts`)
+- [x] API-Funktionen: Calculations (`api/calculations.ts`)
+- [x] Tenant-Context/Hook (`hooks/useTenant.ts`)
 - [ ] AppShell Layout (`components/layout/AppShell.tsx`) — Sidebar + Header + Main
 - [ ] Sidebar Navigation (`components/layout/Sidebar.tsx`)
 - [ ] TenantSelector im Header (`components/layout/TenantSelector.tsx`)
