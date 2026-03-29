@@ -24,13 +24,13 @@
 
 ## Phase 2: Dashboard
 
-- [ ] DashboardPage (`pages/DashboardPage.tsx`) — Grundstruktur mit Filterleiste
-- [ ] StatusBadge Komponente (`components/settlement/StatusBadge.tsx`)
-- [ ] SettlementCard Komponente (`components/settlement/SettlementCard.tsx`)
-- [ ] Karten-Grid mit Settlement-Liste und Status-Filter (Alle/Offen/Berechnet/Freigegeben)
-- [ ] CreateSettlementDialog (`components/settlement/CreateSettlementDialog.tsx`)
-- [ ] TanStack Query Hook: `useSettlements` (`hooks/useSettlements.ts`)
-- [ ] TanStack Query Mutation: `useCreateSettlement`
+- [x] DashboardPage (`pages/DashboardPage.tsx`) — Grundstruktur mit Filterleiste
+- [x] StatusBadge Komponente (`components/settlement/StatusBadge.tsx`)
+- [x] SettlementCard Komponente (`components/settlement/SettlementCard.tsx`)
+- [x] Karten-Grid mit Settlement-Liste und Status-Filter (Alle/Offen/Berechnet/Freigegeben)
+- [x] CreateSettlementDialog (`components/settlement/CreateSettlementDialog.tsx`)
+- [x] TanStack Query Hook: `useSettlements` (`hooks/useSettlements.ts`)
+- [x] TanStack Query Mutation: `useCreateSettlement`
 
 ## Phase 3: Settlement-Detail — Konfiguration
 
