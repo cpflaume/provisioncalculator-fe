@@ -33,7 +33,7 @@ export function TreeEditor({ nodes, onChange, readOnly }: TreeEditorProps) {
       <h3 className="text-sm font-medium text-gray-700">Kundenbaum</h3>
 
       {!readOnly && (
-        <div className="flex gap-2 items-end">
+        <div className="flex gap-2 items-end" onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addNode() } }}>
           <div className="flex-1">
             <label className="text-xs text-gray-500">Kunden-ID</label>
             <Input
