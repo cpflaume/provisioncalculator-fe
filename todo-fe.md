@@ -4,7 +4,7 @@
 
 - [x] Vite + React + TypeScript Projekt initialisieren
 - [x] Tailwind CSS installieren und konfigurieren
-- [ ] shadcn/ui Setup (components.json, erste Basis-Komponenten)
+- [x] shadcn/ui Setup (components.json, erste Basis-Komponenten)
 - [ ] React Router v6 einrichten
 - [ ] TanStack Query (React Query) einrichten
 - [ ] reactflow installieren
