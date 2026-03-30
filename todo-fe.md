@@ -34,18 +34,18 @@
 
 ## Phase 3: Settlement-Detail — Konfiguration
 
-- [ ] SettlementPage (`pages/SettlementPage.tsx`) — Tab-Navigation Grundstruktur
-- [ ] StatusStepper Komponente (`components/settlement/StatusStepper.tsx`)
-- [ ] TanStack Query Hook: `useSettlement` (Einzel-Settlement laden)
-- [ ] TanStack Query Hook: `useConfig` (`hooks/useSettlements.ts`)
-- [ ] RatesEditor (`components/config/RatesEditor.tsx`) — editierbare Tabelle mit Add/Remove
-- [ ] TreeEditor (`components/config/TreeEditor.tsx`) — Formular für Knoten hinzufügen/entfernen
-- [ ] TreeVisualization (`components/config/TreeVisualization.tsx`) — reactflow Baumdarstellung
-- [ ] JsonFileImport (`components/common/JsonFileImport.tsx`) — wiederverwendbare Drag&Drop Komponente
-- [ ] TreeImport (`components/config/TreeImport.tsx`) — JSON-Import für Konfiguration mit Vorschau
-- [ ] ConfigPanel (`components/config/ConfigPanel.tsx`) — Rates + Tree + Import kombiniert
-- [ ] TanStack Query Mutation: `useConfigureSettlement`
-- [ ] Read-only Modus bei Status APPROVED
+- [x] SettlementPage (`pages/SettlementPage.tsx`) — Tab-Navigation Grundstruktur
+- [x] StatusStepper Komponente (`components/settlement/StatusStepper.tsx`)
+- [x] TanStack Query Hook: `useSettlement` (Einzel-Settlement laden)
+- [x] TanStack Query Hook: `useConfig` (`hooks/useSettlements.ts`)
+- [x] RatesEditor (`components/config/RatesEditor.tsx`) — editierbare Tabelle mit Add/Remove
+- [x] TreeEditor (`components/config/TreeEditor.tsx`) — Formular für Knoten hinzufügen/entfernen
+- [x] TreeVisualization (`components/config/TreeVisualization.tsx`) — reactflow Baumdarstellung
+- [x] JsonFileImport (`components/common/JsonFileImport.tsx`) — wiederverwendbare Drag&Drop Komponente
+- [x] TreeImport (`components/config/TreeImport.tsx`) — JSON-Import für Konfiguration mit Vorschau
+- [x] ConfigPanel (`components/config/ConfigPanel.tsx`) — Rates + Tree + Import kombiniert
+- [x] TanStack Query Mutation: `useConfigureSettlement`
+- [x] Read-only Modus bei Status APPROVED
 
 ## Phase 4: Einkäufe
 
