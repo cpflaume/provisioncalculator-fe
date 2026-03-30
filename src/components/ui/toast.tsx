@@ -47,8 +47,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
-        {toasts.map((t) => (
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm" role="status" aria-live="polite">
+        {toasts.slice(-5).map((t) => (
           <ToastItem key={t.id} toast={t} onDismiss={dismiss} />
         ))}
       </div>
@@ -65,7 +65,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
   return (
     <div
       className={cn(
-        "rounded-lg border px-4 py-3 shadow-lg text-sm flex items-center justify-between gap-3 animate-in slide-in-from-right",
+        "rounded-lg border px-4 py-3 shadow-lg text-sm flex items-center justify-between gap-3 transition-opacity duration-200",
         toast.variant === "success" && "bg-green-50 border-green-200 text-green-800",
         toast.variant === "error" && "bg-red-50 border-red-200 text-red-800",
         toast.variant === "default" && "bg-white border-gray-200 text-gray-800",
