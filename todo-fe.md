@@ -73,23 +73,23 @@
 
 ## Phase 6: Polish & Qualität
 
-- [ ] Error-Handling: API-Fehler als Toast-Benachrichtigungen
-- [ ] Loading-States: Skeleton-Loader für alle Daten-Bereiche
-- [ ] Success-Toasts nach Aktionen (Erstellen, Speichern, Berechnen, Freigeben)
-- [ ] Responsive Design Feinschliff
-- [ ] Alle Labels/Buttons auf Deutsch verifizieren
-- [ ] Validierung im JSON-Import (Syntax, Pflichtfelder, Duplikate, Buyer im Baum)
+- [x] Error-Handling: API-Fehler als Toast-Benachrichtigungen
+- [x] Loading-States: Skeleton-Loader für alle Daten-Bereiche
+- [x] Success-Toasts nach Aktionen (Erstellen, Speichern, Berechnen, Freigeben)
+- [x] Responsive Design Feinschliff
+- [x] Alle Labels/Buttons auf Deutsch verifiziert
+- [x] Validierung im JSON-Import (Syntax, Pflichtfelder, Duplikate, Buyer im Baum)
 
 ## Verifikation
 
-- [ ] `npm run dev` startet ohne Fehler
-- [ ] Dashboard: Settlements laden und anzeigen
-- [ ] Settlement erstellen: Dialog → Name → erscheint auf Dashboard
-- [ ] Konfiguration: Rates + Tree manuell eingeben → Baum-Visualisierung korrekt
-- [ ] JSON-Import Baum: Datei hochladen → Vorschau → Übernehmen speichert
-- [ ] Einkäufe: Manuell hinzufügen → Tabelle zeigt sie
-- [ ] JSON-Import Einkäufe: Datei hochladen → Vorschau → Batch senden
-- [ ] Berechnung: "Berechnen" → Ergebnisse angezeigt, Status = CALCULATED
-- [ ] Freigabe: "Freigeben" → Status APPROVED, UI read-only
-- [ ] Ablehnung: "Ablehnen" → Status zurück auf OPEN
-- [ ] Multi-Tenant: Tenant-Wechsel lädt andere Daten
+- [x] `npm run dev` startet ohne Fehler
+- [x] Dashboard: Settlements laden und anzeigen
+- [x] Settlement erstellen: Dialog → Name → erscheint auf Dashboard
+- [x] Konfiguration: Rates + Tree manuell eingeben → Baum-Visualisierung korrekt
+- [x] JSON-Import Baum: Datei hochladen → Vorschau → Übernehmen speichert
+- [x] Einkäufe: Manuell hinzufügen → Tabelle zeigt sie
+- [x] JSON-Import Einkäufe: Datei hochladen → Vorschau → Batch senden
+- [x] Berechnung: "Berechnen" → Ergebnisse angezeigt, Status = CALCULATED
+- [x] Freigabe: "Freigeben" → Status APPROVED, UI read-only
+- [x] Ablehnung: "Ablehnen" → Status zurück auf OPEN
+- [x] Multi-Tenant: Tenant-Wechsel lädt andere Daten
