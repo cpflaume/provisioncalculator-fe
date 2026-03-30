@@ -59,17 +59,17 @@
 
 ## Phase 5: Ergebnisse & Berechnung
 
-- [ ] ActionBar (`components/settlement/ActionBar.tsx`) — kontextabhängige Buttons (Berechnen/Freigeben/Ablehnen)
-- [ ] TanStack Query Mutations: `useCalculate`, `useApprove`, `useReject`
-- [ ] TanStack Query Hook: `useCalculation` (`hooks/useCalculation.ts`)
-- [ ] TanStack Query Hook: `useRecipientDetail`
-- [ ] TanStack Query Hook: `useAuditTrail`
-- [ ] ResultsSummary (`components/results/ResultsSummary.tsx`) — Gesamtprovision, Empfängeranzahl
-- [ ] RecipientTable (`components/results/RecipientTable.tsx`) — sortierbar nach Name/Provision
-- [ ] RecipientDetail (`components/results/RecipientDetail.tsx`) — expandierbare Aufschlüsselung
-- [ ] CommissionTreeView (`components/results/CommissionTreeView.tsx`) — Baum mit Provisionsfluss
-- [ ] AuditTrail (`components/results/AuditTrail.tsx`) — vollständiges Audit-Log
-- [ ] Hinweis "Bitte zuerst berechnen" wenn Status < CALCULATED
+- [x] ActionBar (`components/settlement/ActionBar.tsx`) — kontextabhängige Buttons (Berechnen/Freigeben/Ablehnen)
+- [x] TanStack Query Mutations: `useCalculate`, `useApprove`, `useReject`
+- [x] TanStack Query Hook: `useCalculation` (`hooks/useCalculation.ts`)
+- [x] TanStack Query Hook: `useRecipientDetail`
+- [x] TanStack Query Hook: `useAuditTrail`
+- [x] ResultsSummary (`components/results/ResultsSummary.tsx`) — Gesamtprovision, Empfängeranzahl
+- [x] RecipientTable (`components/results/RecipientTable.tsx`) — sortierbar nach Name/Provision
+- [x] RecipientDetail (`components/results/RecipientDetail.tsx`) — expandierbare Aufschlüsselung
+- [x] CommissionTreeView (`components/results/CommissionTreeView.tsx`) — Baum mit Provisionsfluss
+- [x] AuditTrail (`components/results/AuditTrail.tsx`) — vollständiges Audit-Log
+- [x] Hinweis "Bitte zuerst berechnen" wenn Status < CALCULATED
 
 ## Phase 6: Polish & Qualität
 
