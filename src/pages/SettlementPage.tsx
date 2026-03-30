@@ -3,9 +3,10 @@ import { AppShell } from "@/components/layout/AppShell"
 import { StatusBadge } from "@/components/settlement/StatusBadge"
 import { StatusStepper } from "@/components/settlement/StatusStepper"
 import { ConfigPanel } from "@/components/config/ConfigPanel"
-import { Button } from "@/components/ui/button"
+import { PurchasesPanel } from "@/components/purchases/PurchasesPanel"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { useSettlement, useConfig, useConfigureSettlement } from "@/hooks/useSettlements"
+import { usePurchases } from "@/hooks/usePurchases"
 import { ArrowLeft } from "lucide-react"
 
 export function SettlementPage() {
@@ -15,6 +16,7 @@ export function SettlementPage() {
   const { data: settlement, isLoading: loadingSettlement } = useSettlement(settlementId)
   const { data: config } = useConfig(settlementId)
   const configureMutation = useConfigureSettlement(settlementId)
+  const { data: purchasesData } = usePurchases(settlementId)
 
   if (loadingSettlement) {
     return (
@@ -34,6 +36,7 @@ export function SettlementPage() {
 
   const isApproved = settlement.status === "APPROVED"
   const hasConfig = (config?.nodeCount ?? 0) > 0
+  const hasPurchases = (purchasesData?.totalElements ?? 0) > 0
 
   return (
     <AppShell>
@@ -54,7 +57,7 @@ export function SettlementPage() {
         <StatusStepper
           status={settlement.status}
           hasConfig={hasConfig}
-          hasPurchases={false}
+          hasPurchases={hasPurchases}
         />
 
         {/* Tabs */}
@@ -75,7 +78,11 @@ export function SettlementPage() {
           </TabsContent>
 
           <TabsContent value="purchases">
-            <div className="mt-4 text-sm text-gray-400">Einkäufe werden in Phase 4 implementiert.</div>
+            <PurchasesPanel
+              settlementId={settlementId}
+              treeNodes={config?.tree ?? []}
+              readOnly={isApproved}
+            />
           </TabsContent>
 
           <TabsContent value="results">
