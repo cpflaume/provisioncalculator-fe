@@ -16,6 +16,7 @@ export function SettlementPage() {
   const { data: settlement, isLoading: loadingSettlement } = useSettlement(settlementId)
   const { data: config } = useConfig(settlementId)
   const configureMutation = useConfigureSettlement(settlementId)
+  const { data: purchasesData } = usePurchases(settlementId)
 
   if (loadingSettlement) {
     return (
@@ -33,7 +34,6 @@ export function SettlementPage() {
     )
   }
 
-  const { data: purchasesData } = usePurchases(settlementId)
   const isApproved = settlement.status === "APPROVED"
   const hasConfig = (config?.nodeCount ?? 0) > 0
   const hasPurchases = (purchasesData?.totalElements ?? 0) > 0
