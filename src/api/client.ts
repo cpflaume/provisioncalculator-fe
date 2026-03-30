@@ -76,17 +76,17 @@ interface ErrorResponseBody {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
+    const text = await response.text().catch(() => response.statusText)
     const contentType = response.headers.get("content-type")
     if (contentType?.includes("application/json")) {
       try {
-        const body: ErrorResponseBody = await response.json()
+        const body: ErrorResponseBody = JSON.parse(text)
         throw new ApiError(response.status, translateError(body.message))
       } catch (e) {
         if (e instanceof ApiError) throw e
       }
     }
-    const message = await response.text().catch(() => response.statusText)
-    throw new ApiError(response.status, translateError(message))
+    throw new ApiError(response.status, translateError(text))
   }
   if (response.status === 204) return undefined as T
   const contentType = response.headers.get("content-type")
