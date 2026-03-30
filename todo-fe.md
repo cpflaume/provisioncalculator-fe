@@ -49,13 +49,13 @@
 
 ## Phase 4: Einkäufe
 
-- [ ] TanStack Query Hook: `usePurchases` — paginiert (`hooks/usePurchases.ts`)
-- [ ] PurchaseStats (`components/purchases/PurchaseStats.tsx`) — Anzahl + Gesamtumsatz
-- [ ] PurchaseTable (`components/purchases/PurchaseTable.tsx`) — paginierte Tabelle
-- [ ] AddPurchaseForm (`components/purchases/AddPurchaseForm.tsx`) — Käufer-Autocomplete aus Baumknoten
-- [ ] PurchaseImport (`components/purchases/PurchaseImport.tsx`) — JSON-Import mit Vorschau + Validierung
-- [ ] TanStack Query Mutation: `useSubmitPurchases`
-- [ ] Read-only Modus bei Status APPROVED
+- [x] TanStack Query Hook: `usePurchases` — paginiert (`hooks/usePurchases.ts`)
+- [x] PurchaseStats (`components/purchases/PurchaseStats.tsx`) — Anzahl + Gesamtumsatz
+- [x] PurchaseTable (`components/purchases/PurchaseTable.tsx`) — paginierte Tabelle
+- [x] AddPurchaseForm (`components/purchases/AddPurchaseForm.tsx`) — Käufer-Autocomplete aus Baumknoten
+- [x] PurchaseImport (`components/purchases/PurchaseImport.tsx`) — JSON-Import mit Vorschau + Validierung
+- [x] TanStack Query Mutation: `useSubmitPurchases`
+- [x] Read-only Modus bei Status APPROVED
 
 ## Phase 5: Ergebnisse & Berechnung
 
