@@ -2,11 +2,14 @@ import { useParams, Link } from "react-router-dom"
 import { AppShell } from "@/components/layout/AppShell"
 import { StatusBadge } from "@/components/settlement/StatusBadge"
 import { StatusStepper } from "@/components/settlement/StatusStepper"
+import { ActionBar } from "@/components/settlement/ActionBar"
 import { ConfigPanel } from "@/components/config/ConfigPanel"
 import { PurchasesPanel } from "@/components/purchases/PurchasesPanel"
+import { ResultsPanel } from "@/components/results/ResultsPanel"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { useSettlement, useConfig, useConfigureSettlement } from "@/hooks/useSettlements"
+import { useSettlement, useConfig, useConfigureSettlement, useApprove, useReject } from "@/hooks/useSettlements"
 import { usePurchases } from "@/hooks/usePurchases"
+import { useCalculate } from "@/hooks/useCalculation"
 import { ArrowLeft } from "lucide-react"
 
 export function SettlementPage() {
@@ -17,6 +20,9 @@ export function SettlementPage() {
   const { data: config } = useConfig(settlementId)
   const configureMutation = useConfigureSettlement(settlementId)
   const { data: purchasesData } = usePurchases(settlementId)
+  const calculateMutation = useCalculate(settlementId)
+  const approveMutation = useApprove(settlementId)
+  const rejectMutation = useReject(settlementId)
 
   if (loadingSettlement) {
     return (
@@ -60,6 +66,17 @@ export function SettlementPage() {
           hasPurchases={hasPurchases}
         />
 
+        {/* Action Bar */}
+        <ActionBar
+          status={settlement.status}
+          onCalculate={() => calculateMutation.mutate()}
+          onApprove={() => approveMutation.mutate()}
+          onReject={() => rejectMutation.mutate()}
+          isCalculating={calculateMutation.isPending}
+          isApproving={approveMutation.isPending}
+          isRejecting={rejectMutation.isPending}
+        />
+
         {/* Tabs */}
         <Tabs defaultValue="config">
           <TabsList>
@@ -86,7 +103,11 @@ export function SettlementPage() {
           </TabsContent>
 
           <TabsContent value="results">
-            <div className="mt-4 text-sm text-gray-400">Ergebnisse werden in Phase 5 implementiert.</div>
+            <ResultsPanel
+              settlementId={settlementId}
+              status={settlement.status}
+              treeNodes={config?.tree ?? []}
+            />
           </TabsContent>
         </Tabs>
       </div>
