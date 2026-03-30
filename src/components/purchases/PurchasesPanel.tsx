@@ -6,6 +6,7 @@ import { PurchaseTable } from "./PurchaseTable"
 import { AddPurchaseForm } from "./AddPurchaseForm"
 import { PurchaseImport } from "./PurchaseImport"
 import { usePurchases, useSubmitPurchases } from "@/hooks/usePurchases"
+import { useToast } from "@/components/ui/toast"
 import { Send, Upload, X } from "lucide-react"
 import type { PurchaseRequest, SubmitPurchasesRequest, TreeNodeResponse } from "@/api/types"
 
@@ -24,6 +25,7 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
   const [pendingPurchases, setPendingPurchases] = useState<PurchaseRequest[]>([])
   const { data: purchasesData, isLoading } = usePurchases(settlementId, page)
   const submitMutation = useSubmitPurchases(settlementId)
+  const { toast } = useToast()
 
   const customerIds = useMemo(
     () => treeNodes.map((n) => n.customerId),
@@ -42,7 +44,11 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
     if (pendingPurchases.length === 0) return
     submitMutation.mutate(
       { purchases: pendingPurchases },
-      { onSuccess: () => setPendingPurchases([]) },
+      { onSuccess: (data) => {
+          setPendingPurchases([])
+          toast(`${data.accepted} Einkäufe gesendet`, "success")
+        },
+      },
     )
   }
 

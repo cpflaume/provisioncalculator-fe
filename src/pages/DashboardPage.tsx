@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { AppShell } from "@/components/layout/AppShell"
 import { Button } from "@/components/ui/button"
+import { SkeletonCard } from "@/components/ui/skeleton"
+import { useToast } from "@/components/ui/toast"
 import { SettlementCard } from "@/components/settlement/SettlementCard"
 import { CreateSettlementDialog } from "@/components/settlement/CreateSettlementDialog"
 import { useSettlements, useCreateSettlement } from "@/hooks/useSettlements"
@@ -18,6 +20,7 @@ export function DashboardPage() {
   const [statusFilter, setStatusFilter] = useState<SettlementStatus | undefined>(undefined)
   const [dialogOpen, setDialogOpen] = useState(false)
 
+  const { toast } = useToast()
   const { data: settlements, isLoading, error } = useSettlements(statusFilter)
   const createMutation = useCreateSettlement()
 
@@ -25,7 +28,10 @@ export function DashboardPage() {
     createMutation.mutate(
       { name },
       {
-        onSuccess: () => setDialogOpen(false),
+        onSuccess: () => {
+          setDialogOpen(false)
+          toast("Abrechnung erstellt", "success")
+        },
       },
     )
   }
@@ -61,7 +67,11 @@ export function DashboardPage() {
 
         {/* Content */}
         {isLoading && (
-          <div className="text-sm text-gray-500">Lade Abrechnungen...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
         )}
 
         {error && (

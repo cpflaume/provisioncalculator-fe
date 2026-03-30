@@ -7,6 +7,8 @@ import { ConfigPanel } from "@/components/config/ConfigPanel"
 import { PurchasesPanel } from "@/components/purchases/PurchasesPanel"
 import { ResultsPanel } from "@/components/results/ResultsPanel"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useToast } from "@/components/ui/toast"
 import { useSettlement, useConfig, useConfigureSettlement, useApprove, useReject } from "@/hooks/useSettlements"
 import { usePurchases } from "@/hooks/usePurchases"
 import { useCalculate } from "@/hooks/useCalculation"
@@ -15,6 +17,7 @@ import { ArrowLeft } from "lucide-react"
 export function SettlementPage() {
   const { id } = useParams<{ id: string }>()
   const settlementId = Number(id)
+  const { toast } = useToast()
 
   const { data: settlement, isLoading: loadingSettlement } = useSettlement(settlementId)
   const { data: config } = useConfig(settlementId)
@@ -27,7 +30,11 @@ export function SettlementPage() {
   if (loadingSettlement) {
     return (
       <AppShell>
-        <div className="text-sm text-gray-500">Lade Abrechnung...</div>
+        <div className="space-y-6">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
       </AppShell>
     )
   }
@@ -43,6 +50,30 @@ export function SettlementPage() {
   const isApproved = settlement.status === "APPROVED"
   const hasConfig = (config?.nodeCount ?? 0) > 0
   const hasPurchases = (purchasesData?.totalElements ?? 0) > 0
+
+  const handleSaveConfig = (request: Parameters<typeof configureMutation.mutate>[0]) => {
+    configureMutation.mutate(request, {
+      onSuccess: () => toast("Konfiguration gespeichert", "success"),
+    })
+  }
+
+  const handleCalculate = () => {
+    calculateMutation.mutate(undefined, {
+      onSuccess: () => toast("Berechnung abgeschlossen", "success"),
+    })
+  }
+
+  const handleApprove = () => {
+    approveMutation.mutate(undefined, {
+      onSuccess: () => toast("Abrechnung freigegeben", "success"),
+    })
+  }
+
+  const handleReject = () => {
+    rejectMutation.mutate(undefined, {
+      onSuccess: () => toast("Abrechnung abgelehnt", "success"),
+    })
+  }
 
   return (
     <AppShell>
@@ -69,9 +100,9 @@ export function SettlementPage() {
         {/* Action Bar */}
         <ActionBar
           status={settlement.status}
-          onCalculate={() => calculateMutation.mutate()}
-          onApprove={() => approveMutation.mutate()}
-          onReject={() => rejectMutation.mutate()}
+          onCalculate={handleCalculate}
+          onApprove={handleApprove}
+          onReject={handleReject}
           isCalculating={calculateMutation.isPending}
           isApproving={approveMutation.isPending}
           isRejecting={rejectMutation.isPending}
@@ -88,7 +119,7 @@ export function SettlementPage() {
           <TabsContent value="config">
             <ConfigPanel
               config={config}
-              onSave={(request) => configureMutation.mutate(request)}
+              onSave={handleSaveConfig}
               isSaving={configureMutation.isPending}
               readOnly={isApproved}
             />
