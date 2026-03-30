@@ -50,7 +50,7 @@ export function ResultsPanel({ settlementId, status, treeNodes }: ResultsPanelPr
           <div className="mt-4 space-y-4">
             <RecipientTable
               results={calculation.results}
-              onSelect={setSelectedRecipient}
+              onSelect={(id) => setSelectedRecipient(id || null)}
               selectedId={selectedRecipient}
             />
             {selectedRecipient && (

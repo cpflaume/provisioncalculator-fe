@@ -35,7 +35,7 @@ export function RecipientTable({ results, onSelect, selectedId }: RecipientTable
     return mul * (a.totalCommission - b.totalCommission)
   })
 
-  const SortIcon = ({ field }: { field: SortField }) => {
+  const renderSortIcon = (field: SortField) => {
     if (sortField !== field) return null
     return sortDir === "asc" ? (
       <ChevronUp className="h-3.5 w-3.5 inline ml-1" />
@@ -53,14 +53,14 @@ export function RecipientTable({ results, onSelect, selectedId }: RecipientTable
             onClick={() => toggleSort("customerId")}
           >
             Empfänger
-            <SortIcon field="customerId" />
+            {renderSortIcon("customerId")}
           </TableHead>
           <TableHead
             className="text-right cursor-pointer select-none"
             onClick={() => toggleSort("totalCommission")}
           >
             Provision
-            <SortIcon field="totalCommission" />
+            {renderSortIcon("totalCommission")}
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -68,8 +68,16 @@ export function RecipientTable({ results, onSelect, selectedId }: RecipientTable
         {sorted.map((r) => (
           <TableRow
             key={r.customerId}
-            className={`cursor-pointer hover:bg-gray-50 ${selectedId === r.customerId ? "bg-blue-50" : ""}`}
-            onClick={() => onSelect(r.customerId)}
+            tabIndex={0}
+            role="button"
+            className={`cursor-pointer hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:outline-none ${selectedId === r.customerId ? "bg-blue-50" : ""}`}
+            onClick={() => onSelect(selectedId === r.customerId ? "" : r.customerId)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault()
+                onSelect(selectedId === r.customerId ? "" : r.customerId)
+              }
+            }}
           >
             <TableCell className="font-medium">{r.customerId}</TableCell>
             <TableCell className="text-right">{formatCurrency(r.totalCommission)}</TableCell>
