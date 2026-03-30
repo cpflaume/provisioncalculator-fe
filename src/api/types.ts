@@ -67,7 +67,6 @@ export interface PurchaseResponse {
 
 export interface Purchase {
   id: number
-  tenantId: string
   buyerCustomerId: string
   amount: number
   purchasedAt: string
@@ -77,7 +76,7 @@ export interface PaginatedPurchases {
   content: Purchase[]
   totalElements: number
   totalPages: number
-  number: number
+  page: number
   size: number
 }
 
