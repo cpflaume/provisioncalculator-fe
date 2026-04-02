@@ -25,7 +25,7 @@ jobs:
       - name: Checkout backend repo
         uses: actions/checkout@v4
         with:
-          repository: cpflaume/provisioncalculator
+          repository: cpflaume/provisioncalculator:main
           path: provisioncalculator
           fetch-depth: 0
 
