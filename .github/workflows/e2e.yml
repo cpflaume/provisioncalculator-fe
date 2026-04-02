@@ -71,6 +71,11 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
+      - name: Verify backend JAR
+        run: |
+          ls -la e2e/.backend/
+          file e2e/.backend/provisioncalculator.jar
+
       - name: Run E2E tests
         run: npx playwright test
         env:
