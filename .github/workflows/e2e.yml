@@ -25,10 +25,14 @@ jobs:
       - name: Download backend JAR from latest release
         run: |
           mkdir -p e2e/.backend
-          gh release download --pattern "*.jar" --dir e2e/.backend --repo cpflaume/provisioncalculator
-          mv e2e/.backend/*.jar e2e/.backend/provisioncalculator.jar
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ASSET_URL=$(curl -s https://api.github.com/repos/cpflaume/provisioncalculator/releases/latest \
+            | jq -r '.assets[] | select(.name | endswith(".jar")) | .browser_download_url')
+          if [ -z "$ASSET_URL" ]; then
+            echo "::error::No JAR asset found in latest backend release"
+            exit 1
+          fi
+          echo "Downloading $ASSET_URL"
+          curl -L -o e2e/.backend/provisioncalculator.jar "$ASSET_URL"
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
