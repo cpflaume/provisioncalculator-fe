@@ -4,13 +4,15 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - '*.md'
-      - 'plan-*.md'
+      - '**/*.md'
   pull_request:
     branches: [main]
     paths-ignore:
-      - '*.md'
-      - 'plan-*.md'
+      - '**/*.md'
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
@@ -25,6 +27,7 @@ jobs:
         with:
           repository: cpflaume/provisioncalculator
           path: provisioncalculator
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -40,6 +43,10 @@ jobs:
         run: |
           cd provisioncalculator
           TAG=$(git tag --sort=-v:refname | head -1)
+          if [ -z "$TAG" ]; then
+            echo "::error::No tags found in backend repo"
+            exit 1
+          fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "Using backend tag: $TAG"
           git checkout "$TAG"
@@ -65,8 +72,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install chromium --with-deps
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       - name: Run E2E tests
         run: npx playwright test
@@ -82,4 +101,4 @@ jobs:
           path: |
             test-results/
             playwright-report/
-          retention-days: 30
+          retention-days: 14
