@@ -2,7 +2,7 @@
 
 ## Context
 
-Das Frontend (`provisioncalculator-fe`) ist fertig implementiert. Der User möchte nun **High-Level User-Acceptance-Tests** mit Playwright, die den kompletten Settlement-Workflow testen. Tests laufen gegen das **echte Backend** (aus Source gebaut, mit H2-In-Memory-DB im Test-Profil). Keine Mocks.
+Das Frontend (`provisioncalculator-fe`) ist fertig implementiert. Der User möchte nun **High-Level User-Acceptance-Tests** mit Playwright, die den kompletten Settlement-Workflow testen. Tests laufen gegen das **echte Backend** (JAR vom latest GitHub Release, mit H2-In-Memory-DB im Test-Profil). Keine Mocks.
 
 ---
 
@@ -11,7 +11,7 @@ Das Frontend (`provisioncalculator-fe`) ist fertig implementiert. Der User möch
 | Entscheidung | Begründung |
 |---|---|
 | **Echtes Backend (H2)** | Kein Mock nötig — BE hat Test-Profil mit H2 in-memory, `ddl-auto: create-drop` |
-| **Build from Source** | Keine GitHub-Releases vorhanden; `gradle bootJar -x test` erzeugt JAR |
+| **JAR vom latest GitHub Release** | Download via GitHub API, kein lokaler Build nötig |
 | **Playwright `webServer`** | Startet/stoppt BE + FE automatisch pro Test-Run |
 | **`workers: 1`, sequential** | Alle Tests teilen eine DB — serielle Ausführung vermeidet Konflikte |
 | **Role-based Locators** | Deutsche UI-Texte als Selektoren (Playwright Best Practice) |
@@ -49,8 +49,11 @@ provisioncalculator-fe/
 
 ### `e2e/global-setup.ts`
 
-- Prüft ob JAR existiert (`/home/user/provisioncalculator/build/libs/provisioncalculator-0.0.1-SNAPSHOT.jar`)
-- Falls nicht: `gradle bootJar -x test` (überspringt BE-Unit-Tests)
+- Prüft ob JAR lokal vorhanden (im `e2e/.backend/` Verzeichnis)
+- Falls nicht: Download vom **latest GitHub Release** (`cpflaume/provisioncalculator`) via GitHub API
+  - GitHub API `/repos/.../releases/latest` → erstes `.jar` Asset finden → Download
+  - Kein `gh` CLI nötig, nur `fetch()` (Node.js 18+)
+  - Fallback: Fehler mit klarer Meldung falls kein Release/JAR gefunden
 - Server-Start wird von Playwright `webServer` Config übernommen
 
 ---
@@ -169,11 +172,11 @@ Deutsche UI-Texte als Selektoren (keine CSS-Selektoren, keine test-ids):
 - `/home/user/provisioncalculator-fe/e2e/settlement-reject.spec.ts` (neu)
 - `/home/user/provisioncalculator-fe/e2e/settlement-import.spec.ts` (neu)
 - `/home/user/provisioncalculator-fe/package.json` (edit: scripts + devDep)
-- `/home/user/provisioncalculator/build/libs/provisioncalculator-0.0.1-SNAPSHOT.jar` (built by global-setup)
+- `e2e/.backend/*.jar` (downloaded by global-setup from latest GitHub Release)
 
 ## Verifikation
 
-1. BE JAR bauen: `cd /home/user/provisioncalculator && gradle bootJar -x test`
-2. Tests ausführen: `cd /home/user/provisioncalculator-fe && npm run test:e2e`
+1. Tests ausführen: `cd /home/user/provisioncalculator-fe && npm run test:e2e`
+2. global-setup downloaded automatisch das JAR vom latest Release
 3. Alle 3 Spec-Dateien sollten grün sein
 4. Bei Fehler: `npm run test:e2e:headed` für visuelles Debugging
