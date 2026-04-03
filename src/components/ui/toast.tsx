@@ -1,23 +1,12 @@
-import { useState, useEffect, useCallback, createContext, useContext } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-type ToastVariant = "default" | "success" | "error"
+import { ToastContext, type ToastVariant } from "./use-toast"
 
 interface Toast {
   id: number
   message: string
   variant: ToastVariant
-}
-
-interface ToastContextValue {
-  toast: (message: string, variant?: ToastVariant) => void
-}
-
-const ToastContext = createContext<ToastContextValue>({ toast: () => {} })
-
-export function useToast() {
-  return useContext(ToastContext)
 }
 
 let nextId = 0
