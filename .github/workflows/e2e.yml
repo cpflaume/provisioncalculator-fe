@@ -9,6 +9,12 @@ on:
     branches: [main]
     paths-ignore:
       - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      record_videos:
+        description: 'Record videos for all tests (not just failures)'
+        type: boolean
+        default: false
 
 concurrency:
   group: e2e-${{ github.ref }}
@@ -81,6 +87,7 @@ jobs:
         env:
           CI: true
           VITE_API_BASE_URL: 'http://localhost:5173'
+          RECORD_ALL_VIDEOS: ${{ inputs.record_videos == true && 'true' || 'false' }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v4
