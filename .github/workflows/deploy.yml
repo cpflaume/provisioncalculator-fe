@@ -1,0 +1,47 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install & Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to OCI
+        env:
+          SSH_KEY: ${{ secrets.ORACLE_VM_SSH_KEY }}
+          HOST: ${{ secrets.OCI_HOST }}
+        run: |
+          echo "$SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          SSH_OPTS="-o StrictHostKeyChecking=no -i deploy_key.pem"
+
+          rsync -avz --delete -e "ssh $SSH_OPTS" dist/ opc@$HOST:/var/www/provisioncalculator-fe/
+
+      - name: Verify
+        env:
+          SSH_KEY: ${{ secrets.ORACLE_VM_SSH_KEY }}
+          HOST: ${{ secrets.OCI_HOST }}
+        run: |
+          SSH_OPTS="-o StrictHostKeyChecking=no -i deploy_key.pem"
+          ssh $SSH_OPTS opc@$HOST "ls -la /var/www/provisioncalculator-fe/index.html"
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f deploy_key.pem

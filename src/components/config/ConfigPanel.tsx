@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { RatesEditor } from "./RatesEditor"
@@ -16,15 +16,17 @@ interface ConfigPanelProps {
 }
 
 export function ConfigPanel({ config, onSave, isSaving, readOnly }: ConfigPanelProps) {
-  const [rates, setRates] = useState<RateResponse[]>([])
-  const [nodes, setNodes] = useState<TreeNodeResponse[]>([])
+  const [rates, setRates] = useState<RateResponse[]>(config?.rates ?? [])
+  const [nodes, setNodes] = useState<TreeNodeResponse[]>(config?.tree ?? [])
+  const [prevConfig, setPrevConfig] = useState(config)
 
-  useEffect(() => {
+  if (config !== prevConfig) {
+    setPrevConfig(config)
     if (config) {
       setRates(config.rates)
       setNodes(config.tree)
     }
-  }, [config])
+  }
 
   const handleImport = (data: ConfigureSettingsRequest) => {
     setRates(data.rates)

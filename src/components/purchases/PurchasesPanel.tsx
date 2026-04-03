@@ -6,7 +6,7 @@ import { PurchaseTable } from "./PurchaseTable"
 import { AddPurchaseForm } from "./AddPurchaseForm"
 import { PurchaseImport } from "./PurchaseImport"
 import { usePurchases, useSubmitPurchases } from "@/hooks/usePurchases"
-import { useToast } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 import { Send, Upload, X } from "lucide-react"
 import type { PurchaseRequest, SubmitPurchasesRequest, TreeNodeResponse } from "@/api/types"
 
