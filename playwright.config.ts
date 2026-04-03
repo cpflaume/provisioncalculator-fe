@@ -7,13 +7,14 @@ export default defineConfig({
   workers: 1,
   retries: 0,
   timeout: 60_000,
+  reporter: process.env.CI ? [['html', { open: 'never' }], ['list']] : 'list',
   use: {
     baseURL: 'http://localhost:5173',
     actionTimeout: 10_000,
     navigationTimeout: 15_000,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
+    video: 'on',
   },
   projects: [
     {
