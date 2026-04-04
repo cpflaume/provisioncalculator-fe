@@ -34,6 +34,8 @@ jobs:
           SSH_OPTS="-o StrictHostKeyChecking=no -i deploy_key.pem"
 
           rsync -avz --delete -e "ssh $SSH_OPTS" dist/ opc@$HOST:/var/www/provisioncalculator-fe/
+          
+          ssh $SSH_OPTS opc@$HOST "sudo systemctl reload caddy"
 
       - name: Verify
         env:
