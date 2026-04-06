@@ -1,10 +1,41 @@
-name: Build & Lint
+name: Build, Lint & Test
 
 on:
   push:
     branches: [main, 'claude/**']
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'e2e/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'tsconfig*.json'
+      - 'eslint.config.js'
+      - 'playwright.config.ts'
+      - '.github/workflows/build.yml'
+      - '.github/workflows/e2e.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'e2e/**'
+      - 'index.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'tsconfig*.json'
+      - 'eslint.config.js'
+      - 'playwright.config.ts'
+      - '.github/workflows/build.yml'
+      - '.github/workflows/e2e.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -27,3 +58,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  e2e:
+    needs: build
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/e2e.yml
+    secrets: inherit
