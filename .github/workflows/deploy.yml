@@ -34,7 +34,10 @@ jobs:
           SSH_OPTS="-o StrictHostKeyChecking=no -i deploy_key.pem"
 
           rsync -avz --delete -e "ssh $SSH_OPTS" dist/ opc@$HOST:/var/www/provisioncalculator-fe/
-          
+
+          # Restore SELinux context for newly deployed files
+          ssh $SSH_OPTS opc@$HOST "sudo restorecon -Rv /var/www/provisioncalculator-fe" || true
+
           ssh $SSH_OPTS opc@$HOST "sudo systemctl reload caddy"
 
       - name: Verify
