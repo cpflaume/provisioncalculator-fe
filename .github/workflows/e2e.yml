@@ -1,12 +1,17 @@
-name: E2E Tests (Manual)
+name: E2E Tests
 
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       record_videos:
         description: 'Record videos for all tests (not just failures)'
         type: boolean
         default: false
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
