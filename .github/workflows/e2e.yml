@@ -1,24 +1,12 @@
-name: E2E Tests
+name: E2E Tests (Manual)
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - '**/*.md'
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - '**/*.md'
   workflow_dispatch:
     inputs:
       record_videos:
         description: 'Record videos for all tests (not just failures)'
         type: boolean
         default: false
-
-concurrency:
-  group: e2e-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   e2e:
