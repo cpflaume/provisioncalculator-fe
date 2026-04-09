@@ -43,6 +43,10 @@ jobs:
           # Restore SELinux context for newly deployed files
           ssh $SSH_OPTS opc@$HOST "sudo restorecon -Rv /var/www/provisioncalculator-fe" || true
 
+          # Deploy Caddyfile to ensure routing config is up to date
+          scp $SSH_OPTS Caddyfile opc@$HOST:/tmp/Caddyfile
+          ssh $SSH_OPTS opc@$HOST "sudo mv /tmp/Caddyfile /etc/caddy/Caddyfile"
+
           ssh $SSH_OPTS opc@$HOST "sudo systemctl reload caddy"
 
       - name: Verify
