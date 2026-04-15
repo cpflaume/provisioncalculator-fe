@@ -114,3 +114,68 @@ export interface AuditEntry {
   depth: number | null
   ruleId: string
 }
+
+// Metrics / KPI types
+
+export interface TenantOverview {
+  settlementsByStatus: Record<string, number>
+  totalPurchaseVolume: number
+  totalCommission: number
+  averageCommissionRatePercent: number
+}
+
+export interface PurchaseOutlier {
+  purchaseId: number
+  buyerCustomerId: string
+  amount: number
+  deviationFactor: number
+}
+
+export interface PurchaseAnalysis {
+  totalAmount: number
+  count: number
+  average: number
+  min: number
+  max: number
+  stdDev: number
+  outliers: PurchaseOutlier[]
+}
+
+export interface DepthBucket {
+  depth: number | null
+  totalAmount: number
+  count: number
+}
+
+export interface CommissionOutlier {
+  recipientCustomerId: string
+  totalCommission: number
+  deviationFactor: number
+}
+
+export interface CommissionAnalysis {
+  totalCommission: number
+  recipientCount: number
+  byDepth: DepthBucket[]
+  outliers: CommissionOutlier[]
+}
+
+export interface TheoreticalDepthLine {
+  depth: number
+  ratePercent: number
+  amount: number
+}
+
+export interface CrossCheckResult {
+  totalPurchaseVolume: number
+  theoreticalByDepth: TheoreticalDepthLine[]
+  theoreticalTotal: number
+  actualTotal: number
+  deviationPercent: number
+}
+
+export interface SettlementMetrics {
+  purchases: PurchaseAnalysis
+  commissions: CommissionAnalysis | null
+  crossCheck: CrossCheckResult | null
+}
