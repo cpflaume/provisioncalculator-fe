@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { RatesEditor } from "./RatesEditor"
 import { TreeEditor } from "./TreeEditor"
@@ -16,14 +16,14 @@ interface ConfigPanelProps {
 export function ConfigPanel({ config, onSave, readOnly }: ConfigPanelProps) {
   const [rates, setRates] = useState<RateResponse[]>(config?.rates ?? [])
   const [nodes, setNodes] = useState<TreeNodeResponse[]>(config?.tree ?? [])
-  const [prevConfig, setPrevConfig] = useState(config)
-
-  if (config !== prevConfig) {
-    setPrevConfig(config)
-    if (config) {
-      setRates(config.rates)
-      setNodes(config.tree)
-    }
+  // Initialize from config only once (first load from undefined → defined).
+  // Deliberately NOT syncing on subsequent refetches to avoid overwriting
+  // in-progress local edits after auto-save triggers a cache invalidation.
+  const initializedRef = useRef(config !== undefined)
+  if (!initializedRef.current && config !== undefined) {
+    initializedRef.current = true
+    setRates(config.rates)
+    setNodes(config.tree)
   }
 
   const handleRateAdd = (rate: RateResponse) => {

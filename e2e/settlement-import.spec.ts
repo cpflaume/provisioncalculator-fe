@@ -34,15 +34,20 @@ test.describe('Settlement JSON Import Flow', () => {
     await page.goto(`/settlements/${settlementId}`)
     await expect(page.getByRole('tab', { name: 'Konfiguration' })).toBeVisible({ timeout: 10_000 })
 
-    // Import config via JSON file
+    // Import config via JSON file — triggers an immediate auto-save
     await page.getByRole('tab', { name: 'Import' }).click()
     const configInput = page.locator('input[type="file"]')
-    await configInput.setInputFiles(path.resolve(__dirname, 'fixtures/config.json'))
+    // Register the response listener before setting the file so we cannot miss it
+    const [saveResp] = await Promise.all([
+      page.waitForResponse(
+        r => r.url().includes('/config') && r.request().method() === 'PUT',
+        { timeout: 10_000 },
+      ),
+      configInput.setInputFiles(path.resolve(__dirname, 'fixtures/config.json')),
+    ])
+    expect(saveResp.status()).toBe(200)
 
-    // Import triggers auto-save; wait for success toast before switching tabs
-    await expect(page.getByText('Gespeichert')).toBeVisible({ timeout: 10_000 })
-
-    // Verify imported data is visible
+    // Verify imported data is visible in the editor tab
     await page.getByRole('tab', { name: 'Bearbeiten' }).click()
     await expect(page.getByText('5 Knoten')).toBeVisible()
 

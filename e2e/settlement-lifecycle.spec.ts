@@ -32,16 +32,27 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
     await page.goto(settlementUrl)
     await expect(page.getByRole('tab', { name: 'Konfiguration' })).toBeVisible()
 
-    // Add 3 rates via inline input row (depth auto-increments: 1, 2, 3)
+    // Helper: wait for the next PUT /config response (any status)
+    const waitForSave = () =>
+      page.waitForResponse(
+        r => r.url().includes('/config') && r.request().method() === 'PUT',
+        { timeout: 10_000 },
+      )
+
+    // Add 3 rates via inline input row (depth auto-increments: 1, 2, 3).
+    // Each save is expected to fail (400) because the tree is still empty —
+    // that is intentional; rates are persisted together with the first valid tree save.
     const ratesTable = page.locator('table').first()
     for (const ratePercent of [5, 3, 1]) {
       const inputRow = ratesTable.locator('tbody tr').last()
       await inputRow.locator('input[type="number"]').last().fill(String(ratePercent))
-      await ratesTable.getByRole('button', { name: 'Hinzufügen' }).click()
+      await Promise.all([waitForSave(), ratesTable.getByRole('button', { name: 'Hinzufügen' }).click()])
     }
 
-    // Add 5 tree nodes
-    const nodes = [
+    // Add 5 tree nodes. Each save now includes the full rates + growing tree.
+    // Waiting for each 200 response before the next click prevents concurrent
+    // saves from racing and overwriting each other on the server.
+    const treeNodes = [
       { id: 'A', parent: '' },
       { id: 'B', parent: 'A' },
       { id: 'C', parent: 'B' },
@@ -51,22 +62,21 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
 
     const customerIdInput = page.getByPlaceholder('z.B. Alice')
     const parentIdInput = page.getByPlaceholder('z.B. Bob')
-    // Tree "Hinzufügen" is the last button with that name; rates button is inside the table
+    // Tree "Hinzufügen" is always the last button — the rates one lives inside <table>
     const treeAddButton = page.getByRole('button', { name: 'Hinzufügen', exact: true }).last()
 
-    for (const node of nodes) {
+    for (const node of treeNodes) {
       await customerIdInput.fill(node.id)
       if (node.parent) {
         await parentIdInput.fill(node.parent)
       } else {
         await parentIdInput.clear()
       }
-      await treeAddButton.click()
+      const [resp] = await Promise.all([waitForSave(), treeAddButton.click()])
+      expect(resp.status()).toBe(200)
     }
 
     await expect(page.getByText('5 Knoten')).toBeVisible()
-    // Each add triggers auto-save; wait for success toast from last save
-    await expect(page.getByText('Gespeichert')).toBeVisible({ timeout: 10_000 })
   })
 
   test('Einkäufe hinzufügen', async ({ page }) => {
