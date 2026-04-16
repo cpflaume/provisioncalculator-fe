@@ -38,13 +38,6 @@ export function Sidebar() {
             <span className={cn(expanded ? "inline" : "hidden", "md:inline")}>Provisionsrechner</span>
             <span className={cn(expanded ? "hidden" : "inline", "md:hidden")}>P</span>
           </h1>
-          <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-1 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-            aria-label={mobileOpen ? "Navigation einklappen" : "Navigation ausklappen"}
-          >
-            {mobileOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
-          </button>
         </div>
         <nav className={cn("flex-1 space-y-1", expanded ? "p-3" : "p-2 md:p-3")}>
           {navItems.map((item) => {
@@ -71,6 +64,15 @@ export function Sidebar() {
             )
           })}
         </nav>
+        <div className={cn("border-t border-gray-200 flex items-center", expanded ? "p-4 justify-end" : "p-2 justify-center md:p-4 md:justify-end")}>
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-1 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            aria-label={mobileOpen ? "Navigation einklappen" : "Navigation ausklappen"}
+          >
+            {mobileOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeftOpen className="h-5 w-5" />}
+          </button>
+        </div>
       </aside>
     </>
   )
