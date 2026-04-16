@@ -32,25 +32,12 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
     await page.goto(settlementUrl)
     await expect(page.getByRole('tab', { name: 'Konfiguration' })).toBeVisible()
 
-    // Add 3 rates
-    for (let i = 0; i < 3; i++) {
-      await page.getByRole('button', { name: 'Tiefe hinzufügen' }).click()
-    }
-
-    const rates = [
-      { depth: 1, rate: 5 },
-      { depth: 2, rate: 3 },
-      { depth: 3, rate: 1 },
-    ]
-
-    // Fill rates row by row
+    // Add 3 rates via inline input row (depth auto-increments: 1, 2, 3)
     const ratesTable = page.locator('table').first()
-    const rows = ratesTable.locator('tbody tr')
-    for (let i = 0; i < 3; i++) {
-      const row = rows.nth(i)
-      const inputs = row.locator('input[type="number"]')
-      await inputs.first().fill(String(rates[i].depth))
-      await inputs.last().fill(String(rates[i].rate))
+    for (const ratePercent of [5, 3, 1]) {
+      const inputRow = ratesTable.locator('tbody tr').last()
+      await inputRow.locator('input[type="number"]').last().fill(String(ratePercent))
+      await ratesTable.getByRole('button', { name: 'Hinzufügen' }).click()
     }
 
     // Add 5 tree nodes
@@ -64,6 +51,8 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
 
     const customerIdInput = page.getByPlaceholder('z.B. Alice')
     const parentIdInput = page.getByPlaceholder('z.B. Bob')
+    // Tree "Hinzufügen" is the last button with that name; rates button is inside the table
+    const treeAddButton = page.getByRole('button', { name: 'Hinzufügen', exact: true }).last()
 
     for (const node of nodes) {
       await customerIdInput.fill(node.id)
@@ -72,13 +61,12 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
       } else {
         await parentIdInput.clear()
       }
-      await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click()
+      await treeAddButton.click()
     }
 
     await expect(page.getByText('5 Knoten')).toBeVisible()
-
-    await page.getByRole('button', { name: 'Konfiguration speichern' }).click()
-    await expect(page.getByText('Konfiguration gespeichert')).toBeVisible({ timeout: 10_000 })
+    // Each add triggers auto-save; wait for success toast from last save
+    await expect(page.getByText('Gespeichert')).toBeVisible({ timeout: 10_000 })
   })
 
   test('Einkäufe hinzufügen', async ({ page }) => {

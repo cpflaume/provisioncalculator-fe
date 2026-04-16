@@ -39,13 +39,12 @@ test.describe('Settlement JSON Import Flow', () => {
     const configInput = page.locator('input[type="file"]')
     await configInput.setInputFiles(path.resolve(__dirname, 'fixtures/config.json'))
 
+    // Import triggers auto-save; wait for success toast before switching tabs
+    await expect(page.getByText('Gespeichert')).toBeVisible({ timeout: 10_000 })
+
     // Verify imported data is visible
     await page.getByRole('tab', { name: 'Bearbeiten' }).click()
     await expect(page.getByText('5 Knoten')).toBeVisible()
-
-    // Save config
-    await page.getByRole('button', { name: 'Konfiguration speichern' }).click()
-    await expect(page.getByText('Konfiguration gespeichert')).toBeVisible({ timeout: 10_000 })
 
     // Switch to purchases tab and import
     await page.getByRole('tab', { name: 'Einkäufe' }).click()
