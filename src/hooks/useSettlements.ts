@@ -34,6 +34,7 @@ export function useCreateSettlement() {
     mutationFn: (request: CreateSettlementRequest) => createSettlement(tenantId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settlements", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })
     },
   })
 }
@@ -46,6 +47,7 @@ export function useConfigureSettlement(settlementId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settlement", tenantId, settlementId] })
       queryClient.invalidateQueries({ queryKey: ["config", tenantId, settlementId] })
+      queryClient.invalidateQueries({ queryKey: ["settlement-metrics", tenantId, settlementId] })
     },
   })
 }
@@ -58,6 +60,7 @@ export function useApprove(settlementId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settlement", tenantId, settlementId] })
       queryClient.invalidateQueries({ queryKey: ["settlements", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })
     },
   })
 }
@@ -70,6 +73,7 @@ export function useReject(settlementId: number) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settlement", tenantId, settlementId] })
       queryClient.invalidateQueries({ queryKey: ["settlements", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })
     },
   })
 }
