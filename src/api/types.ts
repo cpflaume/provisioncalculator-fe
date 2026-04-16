@@ -120,6 +120,8 @@ export interface AuditEntry {
 export interface TenantOverview {
   settlementsByStatus: Record<string, number>
   totalPurchaseVolume: number
+  approvedPurchaseVolume: number
+  otherPurchaseVolume: number
   totalCommission: number
   averageCommissionRatePercent: number
 }
