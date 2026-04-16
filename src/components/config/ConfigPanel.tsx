@@ -29,7 +29,7 @@ export function ConfigPanel({ config, onSave, isSaving, readOnly }: ConfigPanelP
   }
 
   const handleImport = (data: ConfigureSettingsRequest) => {
-    setRates(data.rates)
+    if (data.rates.length > 0) setRates(data.rates)
     setNodes(data.tree)
   }
 

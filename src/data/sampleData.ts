@@ -3,11 +3,7 @@ import type { ConfigureSettingsRequest, SubmitPurchasesRequest } from "@/api/typ
 // ── Small Example (5 nodes, depth 3, 10 purchases) ──────────────────
 
 export const smallTreeConfig: ConfigureSettingsRequest = {
-  rates: [
-    { depth: 1, ratePercent: 5.0 },
-    { depth: 2, ratePercent: 3.0 },
-    { depth: 3, ratePercent: 1.0 },
-  ],
+  rates: [],
   tree: [
     { customerId: "Anna", parentCustomerId: null },
     { customerId: "Ben", parentCustomerId: "Anna" },
@@ -19,16 +15,16 @@ export const smallTreeConfig: ConfigureSettingsRequest = {
 
 export const smallPurchases: SubmitPurchasesRequest = {
   purchases: [
-    { buyerCustomerId: "Clara", amount: 250.0, purchasedAt: "2026-03-01T10:00:00" },
-    { buyerCustomerId: "David", amount: 180.5, purchasedAt: "2026-03-02T14:30:00" },
-    { buyerCustomerId: "Eva", amount: 320.0, purchasedAt: "2026-03-03T09:15:00" },
-    { buyerCustomerId: "Ben", amount: 150.0, purchasedAt: "2026-03-04T16:45:00" },
-    { buyerCustomerId: "Clara", amount: 420.75, purchasedAt: "2026-03-05T11:20:00" },
-    { buyerCustomerId: "David", amount: 95.0, purchasedAt: "2026-03-06T08:00:00" },
-    { buyerCustomerId: "Eva", amount: 560.0, purchasedAt: "2026-03-07T13:45:00" },
-    { buyerCustomerId: "Ben", amount: 210.3, purchasedAt: "2026-03-08T15:30:00" },
-    { buyerCustomerId: "Anna", amount: 175.0, purchasedAt: "2026-03-09T10:15:00" },
-    { buyerCustomerId: "David", amount: 340.0, purchasedAt: "2026-03-10T12:00:00" },
+    { buyerCustomerId: "Clara", amount: 300, purchasedAt: "2026-03-01T10:00:00" },
+    { buyerCustomerId: "David", amount: 200, purchasedAt: "2026-03-02T14:30:00" },
+    { buyerCustomerId: "Eva", amount: 300, purchasedAt: "2026-03-03T09:15:00" },
+    { buyerCustomerId: "Ben", amount: 200, purchasedAt: "2026-03-04T16:45:00" },
+    { buyerCustomerId: "Clara", amount: 400, purchasedAt: "2026-03-05T11:20:00" },
+    { buyerCustomerId: "David", amount: 100, purchasedAt: "2026-03-06T08:00:00" },
+    { buyerCustomerId: "Eva", amount: 600, purchasedAt: "2026-03-07T13:45:00" },
+    { buyerCustomerId: "Ben", amount: 200, purchasedAt: "2026-03-08T15:30:00" },
+    { buyerCustomerId: "Anna", amount: 200, purchasedAt: "2026-03-09T10:15:00" },
+    { buyerCustomerId: "David", amount: 300, purchasedAt: "2026-03-10T12:00:00" },
   ],
 }
 
@@ -63,12 +59,6 @@ function generateLargeTree(): ConfigureSettingsRequest {
   const nodeCount = 500
   const maxDepth = 20
 
-  // Rates for depths 1-20: from 5% down to ~0.5%
-  const rates = Array.from({ length: maxDepth }, (_, i) => ({
-    depth: i + 1,
-    ratePercent: Math.round((5.0 - (i * 4.5) / (maxDepth - 1)) * 100) / 100,
-  }))
-
   // Generate unique names
   const names = Array.from({ length: nodeCount }, (_, i) => generateName(i))
 
@@ -86,7 +76,7 @@ function generateLargeTree(): ConfigureSettingsRequest {
     tree.push({ customerId: names[i], parentCustomerId: tree[parentIdx].customerId })
   }
 
-  return { rates, tree }
+  return { rates: [], tree }
 }
 
 function generateLargePurchases(treeConfig: ConfigureSettingsRequest): SubmitPurchasesRequest {
@@ -96,8 +86,8 @@ function generateLargePurchases(treeConfig: ConfigureSettingsRequest): SubmitPur
 
   const purchases = Array.from({ length: purchaseCount }, () => {
     const buyerIdx = Math.floor(rng() * customerIds.length)
-    // Amount between 100.00 and 10000.00
-    const amount = Math.round((100 + rng() * 9900) * 100) / 100
+    // Amount between 100 and 10000, rounded to nearest 100
+    const amount = Math.round((100 + rng() * 9900) / 100) * 100
     // Random date in 2026
     const month = 1 + Math.floor(rng() * 12)
     const day = 1 + Math.floor(rng() * 28)
