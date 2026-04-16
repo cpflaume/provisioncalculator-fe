@@ -53,7 +53,8 @@ export function SettlementPage() {
 
   const handleSaveConfig = (request: Parameters<typeof configureMutation.mutate>[0]) => {
     configureMutation.mutate(request, {
-      onSuccess: () => toast("Konfiguration gespeichert", "success"),
+      onSuccess: () => toast("Gespeichert", "success"),
+      onError: () => toast("Fehler beim Speichern der Konfiguration", "error"),
     })
   }
 
@@ -120,7 +121,6 @@ export function SettlementPage() {
             <ConfigPanel
               config={config}
               onSave={handleSaveConfig}
-              isSaving={configureMutation.isPending}
               readOnly={isApproved}
             />
           </TabsContent>

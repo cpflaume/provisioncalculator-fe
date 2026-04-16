@@ -7,11 +7,12 @@ import type { TreeNodeResponse } from "@/api/types"
 
 interface TreeEditorProps {
   nodes: TreeNodeResponse[]
-  onChange: (nodes: TreeNodeResponse[]) => void
+  onAdd: (node: TreeNodeResponse) => void
+  onRemove: (customerId: string) => void
   readOnly: boolean
 }
 
-export function TreeEditor({ nodes, onChange, readOnly }: TreeEditorProps) {
+export function TreeEditor({ nodes, onAdd, onRemove, readOnly }: TreeEditorProps) {
   const [newCustomerId, setNewCustomerId] = useState("")
   const [newParentId, setNewParentId] = useState("")
 
@@ -19,13 +20,9 @@ export function TreeEditor({ nodes, onChange, readOnly }: TreeEditorProps) {
     if (!newCustomerId.trim()) return
     const existing = nodes.find((n) => n.customerId === newCustomerId.trim())
     if (existing) return
-    onChange([...nodes, { customerId: newCustomerId.trim(), parentCustomerId: newParentId.trim() || null }])
+    onAdd({ customerId: newCustomerId.trim(), parentCustomerId: newParentId.trim() || null })
     setNewCustomerId("")
     setNewParentId("")
-  }
-
-  const removeNode = (customerId: string) => {
-    onChange(nodes.filter((n) => n.customerId !== customerId))
   }
 
   return (
@@ -77,7 +74,7 @@ export function TreeEditor({ nodes, onChange, readOnly }: TreeEditorProps) {
                 <TableCell>{node.parentCustomerId ?? <span className="text-gray-400">(Wurzel)</span>}</TableCell>
                 {!readOnly && (
                   <TableCell>
-                    <Button variant="ghost" size="icon" onClick={() => removeNode(node.customerId)} className="h-8 w-8">
+                    <Button variant="ghost" size="icon" onClick={() => onRemove(node.customerId)} className="h-8 w-8">
                       <Trash2 className="h-3.5 w-3.5 text-red-500" />
                     </Button>
                   </TableCell>
