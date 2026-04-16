@@ -19,6 +19,8 @@ export function useSubmitPurchases(settlementId: number) {
       submitPurchases(tenantId, settlementId, request),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchases", tenantId, settlementId] })
+      queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["settlement-metrics", tenantId, settlementId] })
     },
   })
 }

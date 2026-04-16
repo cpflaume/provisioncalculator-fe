@@ -5,6 +5,7 @@ import { RecipientTable } from "./RecipientTable"
 import { RecipientDetail } from "./RecipientDetail"
 import { CommissionTreeView } from "./CommissionTreeView"
 import { AuditTrail } from "./AuditTrail"
+import { MetricsTab } from "./MetricsTab"
 import { useCalculation } from "@/hooks/useCalculation"
 import type { SettlementStatus, TreeNodeResponse } from "@/api/types"
 
@@ -44,6 +45,7 @@ export function ResultsPanel({ settlementId, status, treeNodes }: ResultsPanelPr
           <TabsTrigger value="recipients">Empfänger</TabsTrigger>
           <TabsTrigger value="tree">Provisionsbaum</TabsTrigger>
           <TabsTrigger value="audit">Audit-Log</TabsTrigger>
+          <TabsTrigger value="analyse">Analyse</TabsTrigger>
         </TabsList>
 
         <TabsContent value="recipients">
@@ -71,6 +73,12 @@ export function ResultsPanel({ settlementId, status, treeNodes }: ResultsPanelPr
         <TabsContent value="audit">
           <div className="mt-4">
             <AuditTrail settlementId={settlementId} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="analyse">
+          <div className="mt-4">
+            <MetricsTab settlementId={settlementId} />
           </div>
         </TabsContent>
       </Tabs>

@@ -38,6 +38,8 @@ export function useCalculate(settlementId: number) {
       queryClient.invalidateQueries({ queryKey: ["calculation", tenantId, settlementId] })
       queryClient.invalidateQueries({ queryKey: ["settlement", tenantId, settlementId] })
       queryClient.invalidateQueries({ queryKey: ["settlements", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["settlement-metrics", tenantId, settlementId] })
     },
   })
 }

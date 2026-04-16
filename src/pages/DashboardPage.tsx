@@ -7,6 +7,7 @@ import { SettlementCard } from "@/components/settlement/SettlementCard"
 import { CreateSettlementDialog } from "@/components/settlement/CreateSettlementDialog"
 import { useSettlements, useCreateSettlement } from "@/hooks/useSettlements"
 import { Plus } from "lucide-react"
+import { TenantOverview } from "@/components/dashboard/TenantOverview"
 import type { SettlementStatus } from "@/api/types"
 
 const statusFilters: { label: string; value: SettlementStatus | undefined }[] = [
@@ -50,6 +51,9 @@ export function DashboardPage() {
             Neue Abrechnung
           </Button>
         </div>
+
+        {/* Tenant KPIs */}
+        <TenantOverview />
 
         {/* Filter */}
         <div className="flex gap-2">
