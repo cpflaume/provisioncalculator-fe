@@ -1,4 +1,6 @@
 import { JsonFileImport } from "@/components/common/JsonFileImport"
+import { Button } from "@/components/ui/button"
+import { smallTreeConfig, largeTreeConfig } from "@/data/sampleData"
 import type { ConfigureSettingsRequest } from "@/api/types"
 
 interface TreeImportProps {
@@ -31,11 +33,24 @@ function validateConfig(data: unknown): string | null {
 
 export function TreeImport({ onImport }: TreeImportProps) {
   return (
-    <JsonFileImport<ConfigureSettingsRequest>
-      onImport={onImport}
-      validate={validateConfig}
-      label="JSON-Datei mit Konfiguration hierher ziehen"
-      description={'Format: { "rates": [...], "tree": [...] }'}
-    />
+    <div className="space-y-4">
+      <JsonFileImport<ConfigureSettingsRequest>
+        onImport={onImport}
+        validate={validateConfig}
+        label="JSON-Datei mit Konfiguration hierher ziehen"
+        description={'Format: { "rates": [...], "tree": [...] }'}
+      />
+      <div className="rounded-md border border-dashed border-gray-200 bg-gray-50 p-4">
+        <p className="text-sm text-gray-600 mb-3">Oder Beispieldaten direkt übernehmen:</p>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" size="sm" onClick={() => onImport(smallTreeConfig)}>
+            Kleines Beispiel (5 Knoten, Tiefe 3)
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => onImport(largeTreeConfig)}>
+            Großes Beispiel (500 Knoten, Tiefe 20)
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }

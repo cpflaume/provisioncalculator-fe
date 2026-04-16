@@ -1,4 +1,6 @@
 import { JsonFileImport } from "@/components/common/JsonFileImport"
+import { Button } from "@/components/ui/button"
+import { smallPurchases, largePurchases } from "@/data/sampleData"
 import type { SubmitPurchasesRequest } from "@/api/types"
 
 interface PurchaseImportProps {
@@ -28,11 +30,24 @@ function validatePurchases(data: unknown): string | null {
 
 export function PurchaseImport({ onImport }: PurchaseImportProps) {
   return (
-    <JsonFileImport<SubmitPurchasesRequest>
-      onImport={onImport}
-      validate={validatePurchases}
-      label="JSON-Datei mit Einkäufen hierher ziehen"
-      description={'Format: { "purchases": [{ "buyerCustomerId": "...", "amount": 100, "purchasedAt": "..." }] }'}
-    />
+    <div className="space-y-4">
+      <JsonFileImport<SubmitPurchasesRequest>
+        onImport={onImport}
+        validate={validatePurchases}
+        label="JSON-Datei mit Einkäufen hierher ziehen"
+        description={'Format: { "purchases": [{ "buyerCustomerId": "...", "amount": 100, "purchasedAt": "..." }] }'}
+      />
+      <div className="rounded-md border border-dashed border-gray-200 bg-gray-50 p-4">
+        <p className="text-sm text-gray-600 mb-3">Oder Beispieldaten direkt übernehmen:</p>
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" size="sm" onClick={() => onImport(smallPurchases)}>
+            Kleines Beispiel (10 Einkäufe)
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => onImport(largePurchases)}>
+            Großes Beispiel (1.500 Einkäufe)
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
