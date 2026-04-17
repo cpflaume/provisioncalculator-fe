@@ -2,7 +2,7 @@ name: Build, Lint & Test
 
 on:
   push:
-    branches: [main, 'claude/**']
+    branches: [main]
     paths:
       - 'src/**'
       - 'public/**'
