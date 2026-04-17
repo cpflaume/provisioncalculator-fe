@@ -16,35 +16,51 @@ concurrency:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Download backend JAR from latest release
-        run: |
-          mkdir -p e2e/.backend
-          ASSET_URL=$(curl -s \
-            -H "Authorization: token $GH_PAT" \
-            https://api.github.com/repos/cpflaume/provisioncalculator/releases/latest \
-            | jq -r '.assets[] | select(.name | endswith(".jar")) | .url')
-          if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
-            echo "::error::No JAR asset found in latest backend release"
-            exit 1
-          fi
-          echo "Downloading JAR from latest release..."
-          curl -L -o e2e/.backend/provisioncalculator.jar \
-            -H "Authorization: token $GH_PAT" \
-            -H "Accept: application/octet-stream" \
-            "$ASSET_URL"
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Prepare backend JAR
+        run: |
+          mkdir -p e2e/.backend
+          BRANCH="${{ github.head_ref || github.ref_name }}"
+          BACKEND_REPO="https://x-access-token:${GH_PAT}@github.com/cpflaume/provisioncalculator.git"
+
+          # If a matching branch exists in the backend repo, build from source
+          if git ls-remote --exit-code "$BACKEND_REPO" "refs/heads/$BRANCH" > /dev/null 2>&1; then
+            echo "Found backend branch '$BRANCH' — building from source"
+            git clone --depth=1 --branch "$BRANCH" "$BACKEND_REPO" backend-src
+            cd backend-src
+            gradle bootJar -x test
+            cp build/libs/*.jar ../e2e/.backend/provisioncalculator.jar
+            cd ..
+          else
+            echo "No matching backend branch — downloading latest release JAR"
+            ASSET_URL=$(curl -s \
+              -H "Authorization: token $GH_PAT" \
+              https://api.github.com/repos/cpflaume/provisioncalculator/releases/latest \
+              | jq -r '.assets[] | select(.name | endswith(".jar")) | .url')
+            if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
+              echo "::error::No JAR asset found in latest backend release"
+              exit 1
+            fi
+            curl -L -o e2e/.backend/provisioncalculator.jar \
+              -H "Authorization: token $GH_PAT" \
+              -H "Accept: application/octet-stream" \
+              "$ASSET_URL"
+          fi
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
