@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { TenantContext } from "@/hooks/useTenant"
 import { ToastProvider } from "@/components/ui/toast"
@@ -16,17 +16,15 @@ import { AdminPage } from "@/pages/AdminPage"
 
 function AuthenticatedApp() {
   const { user } = useAuth()
-  const [tenantId, setTenantId] = useState(() => user?.tenantIds[0] ?? "")
-
-  useEffect(() => {
-    const firstTenant = user?.tenantIds[0]
-    if (firstTenant && firstTenant !== tenantId) {
-      setTenantId(firstTenant)
-    }
-  }, [user?.tenantIds])
+  const [selectedTenant, setSelectedTenant] = useState("")
+  // Derive active tenant: respect manual selection only if user still has that tenant
+  const tenantId =
+    selectedTenant && user?.tenantIds.includes(selectedTenant)
+      ? selectedTenant
+      : (user?.tenantIds[0] ?? "")
 
   return (
-    <TenantContext.Provider value={{ tenantId, setTenantId }}>
+    <TenantContext.Provider value={{ tenantId, setTenantId: setSelectedTenant }}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

@@ -1,5 +1,5 @@
 import { rawGet, rawPost } from "./client"
-import type { AuthUser } from "@/context/AuthContext"
+import type { AuthUser } from "@/context/auth-context-def"
 
 interface AuthResponse {
   token: string

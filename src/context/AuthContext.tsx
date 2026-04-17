@@ -1,50 +1,25 @@
-import { createContext, useState, useEffect, type ReactNode } from "react"
+import { useState, useEffect, type ReactNode } from "react"
 import { login as apiLogin, register as apiRegister, getMe } from "@/api/auth"
-
-export interface AuthUser {
-  userId: number
-  email: string
-  displayName: string
-  role: "ADMIN" | "USER"
-  status: "PENDING" | "ACTIVE" | "DISABLED"
-  tenantIds: string[]
-}
-
-interface AuthContextValue {
-  user: AuthUser | null
-  token: string | null
-  loading: boolean
-  login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string, displayName: string) => Promise<void>
-  logout: () => void
-}
-
-export const AuthContext = createContext<AuthContextValue>({
-  user: null,
-  token: null,
-  loading: true,
-  login: async () => {},
-  register: async () => {},
-  logout: () => {},
-})
+import { AuthContext, type AuthUser } from "./auth-context-def"
 
 const TOKEN_KEY = "auth_token"
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
-  const [token, setToken] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY))
+  // Start loading only if there is a stored token to validate
+  const [loading, setLoading] = useState<boolean>(() => !!localStorage.getItem(TOKEN_KEY))
 
   useEffect(() => {
     const stored = localStorage.getItem(TOKEN_KEY)
     if (stored) {
-      setToken(stored)
       getMe()
         .then(setUser)
-        .catch(() => localStorage.removeItem(TOKEN_KEY))
+        .catch(() => {
+          localStorage.removeItem(TOKEN_KEY)
+          setToken(null)
+        })
         .finally(() => setLoading(false))
-    } else {
-      setLoading(false)
     }
   }, [])
 
