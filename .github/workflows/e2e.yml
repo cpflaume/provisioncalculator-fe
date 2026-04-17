@@ -16,7 +16,7 @@ concurrency:
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -27,27 +27,48 @@ jobs:
           distribution: temurin
           java-version: '21'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
       - name: Prepare backend JAR
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p e2e/.backend
           BRANCH="${{ github.head_ref || github.ref_name }}"
-          BACKEND_REPO="https://x-access-token:${GH_PAT}@github.com/cpflaume/provisioncalculator.git"
+          echo "::notice::Frontend branch: $BRANCH"
 
-          # If a matching branch exists in the backend repo, build from source
-          if git ls-remote --exit-code "$BACKEND_REPO" "refs/heads/$BRANCH" > /dev/null 2>&1; then
-            echo "Found backend branch '$BRANCH' — building from source"
-            git clone --depth=1 --branch "$BRANCH" "$BACKEND_REPO" backend-src
+          # URL-encode the branch name (handles claude/ prefix and slashes)
+          ENCODED_BRANCH=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$BRANCH")
+
+          # Use GitHub API to check if a matching branch exists in the backend repo
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token $GH_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/cpflaume/provisioncalculator/branches/${ENCODED_BRANCH}")
+          echo "::notice::Backend branch check HTTP status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "::notice::Matching backend branch '$BRANCH' found — building JAR from source"
+
+            git clone --depth=1 --branch "$BRANCH" \
+              "https://x-access-token:${GH_PAT}@github.com/cpflaume/provisioncalculator.git" \
+              backend-src
+
+            # Install Gradle directly (backend has no gradlew wrapper)
+            GRADLE_VERSION=8.14.3
+            curl -sL "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip" \
+              -o /tmp/gradle.zip
+            unzip -q /tmp/gradle.zip -d /opt/gradle-install
+            export PATH="/opt/gradle-install/gradle-${GRADLE_VERSION}/bin:$PATH"
+
             cd backend-src
-            gradle bootJar -x test
-            cp build/libs/*.jar ../e2e/.backend/provisioncalculator.jar
+            gradle bootJar -x test --no-daemon
             cd ..
+            cp backend-src/build/libs/*.jar e2e/.backend/provisioncalculator.jar
+            echo "::notice::Backend JAR built from source successfully"
           else
-            echo "No matching backend branch — downloading latest release JAR"
+            echo "::notice::No matching backend branch (HTTP $HTTP_STATUS) — downloading latest release JAR"
             ASSET_URL=$(curl -s \
               -H "Authorization: token $GH_PAT" \
+              -H "Accept: application/vnd.github+json" \
               https://api.github.com/repos/cpflaume/provisioncalculator/releases/latest \
               | jq -r '.assets[] | select(.name | endswith(".jar")) | .url')
             if [ -z "$ASSET_URL" ] || [ "$ASSET_URL" = "null" ]; then
@@ -58,6 +79,7 @@ jobs:
               -H "Authorization: token $GH_PAT" \
               -H "Accept: application/octet-stream" \
               "$ASSET_URL"
+            echo "::notice::Downloaded latest release JAR"
           fi
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
