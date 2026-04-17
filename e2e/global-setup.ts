@@ -1,5 +1,5 @@
 import { execSync } from 'child_process'
-import { existsSync, mkdirSync, copyFileSync } from 'fs'
+import { existsSync, mkdirSync, copyFileSync, writeFileSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -7,6 +7,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const BACKEND_DIR = path.resolve(__dirname, '.backend')
 const JAR_PATH = path.join(BACKEND_DIR, 'provisioncalculator.jar')
 const BE_REPO = path.resolve(__dirname, '../../provisioncalculator')
+const BACKEND_CONFIG = path.join(BACKEND_DIR, 'application.yml')
+
+function writeBackendConfig() {
+  const config = `
+app:
+  jwt:
+    secret: e2e-test-jwt-secret-must-be-at-least-32-bytes-long
+    expiration-ms: 86400000
+    issuer: provisioncalculator
+  seed:
+    admin:
+      enabled: true
+      email: admin@e2e.test
+      password: Admin1234!
+      display-name: E2E Admin
+`
+  writeFileSync(BACKEND_CONFIG, config.trimStart())
+  console.log('[global-setup] Wrote backend config with test admin seed.')
+}
 
 function buildFromSource() {
   if (!existsSync(BE_REPO)) {
@@ -52,6 +71,9 @@ function buildFromSource() {
 }
 
 export default async function globalSetup() {
+  mkdirSync(BACKEND_DIR, { recursive: true })
+  writeBackendConfig()
+
   if (existsSync(JAR_PATH)) {
     console.log('[global-setup] Backend JAR already exists, skipping build.')
     return

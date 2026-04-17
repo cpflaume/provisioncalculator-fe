@@ -10,10 +10,6 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * Maps known BE error messages to German user-facing messages.
- * Falls back to the original message if no mapping is found.
- */
 const errorMessages: Record<string, string> = {
   // State transitions (409 Conflict)
   "Settlement must be CALCULATED to approve": "Die Abrechnung muss zuerst berechnet werden, bevor sie freigegeben werden kann.",
@@ -35,6 +31,10 @@ const errorMessages: Record<string, string> = {
   // Not found (404)
   "No calculation found": "Keine Berechnung gefunden.",
 
+  // Auth
+  "Email already registered": "Diese E-Mail-Adresse ist bereits registriert.",
+  "Invalid credentials": "Ungültige Anmeldedaten.",
+
   // Generic
   "Data integrity violation — duplicate or invalid reference": "Datenintegritätsfehler — doppelter Eintrag oder ungültige Referenz.",
   "Malformed request body": "Ungültiger Request-Body.",
@@ -43,25 +43,20 @@ const errorMessages: Record<string, string> = {
 }
 
 function translateError(message: string): string {
-  // Exact match
   if (errorMessages[message]) return errorMessages[message]
 
-  // Prefix match for messages with dynamic suffixes (e.g., "Settlement must be CALCULATED to approve, current: OPEN")
   for (const [key, translation] of Object.entries(errorMessages)) {
     if (message.startsWith(key)) return translation
   }
 
-  // Match "Tree must have exactly one root node, found X"
   if (message.startsWith("Tree must have exactly one root node")) {
     return "Der Baum darf nur genau einen Wurzelknoten haben."
   }
 
-  // Match "Settlement X not found"
   if (/^Settlement \d+ not found$/.test(message)) {
     return "Abrechnung nicht gefunden."
   }
 
-  // Match orphaned node errors: "Node 'X' references unknown parent 'Y'"
   if (message.includes("references unknown parent")) {
     return "Ein Knoten verweist auf einen unbekannten Elternknoten."
   }
@@ -76,6 +71,9 @@ interface ErrorResponseBody {
 
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("auth-expired"))
+    }
     const text = await response.text().catch(() => response.statusText)
     const contentType = response.headers.get("content-type")
     if (contentType?.includes("application/json")) {
@@ -96,18 +94,25 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return undefined as T
 }
 
+function getAuthHeader(): Record<string, string> {
+  const token = localStorage.getItem("auth_token")
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 function buildUrl(tenantId: string, path: string): string {
   return `${BASE_URL}/api/v1/tenants/${encodeURIComponent(tenantId)}${path}`
 }
 
 export function apiGet<T>(tenantId: string, path: string): Promise<T> {
-  return fetch(buildUrl(tenantId, path)).then(handleResponse<T>)
+  return fetch(buildUrl(tenantId, path), {
+    headers: getAuthHeader(),
+  }).then(handleResponse<T>)
 }
 
 export function apiPost<T>(tenantId: string, path: string, body?: unknown): Promise<T> {
   return fetch(buildUrl(tenantId, path), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeader() },
     body: body !== undefined ? JSON.stringify(body) : "{}",
   }).then(handleResponse<T>)
 }
@@ -115,7 +120,28 @@ export function apiPost<T>(tenantId: string, path: string, body?: unknown): Prom
 export function apiPut<T>(tenantId: string, path: string, body: unknown): Promise<T> {
   return fetch(buildUrl(tenantId, path), {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...getAuthHeader() },
     body: JSON.stringify(body),
+  }).then(handleResponse<T>)
+}
+
+export function rawGet<T>(path: string): Promise<T> {
+  return fetch(`${BASE_URL}${path}`, {
+    headers: getAuthHeader(),
+  }).then(handleResponse<T>)
+}
+
+export function rawPost<T>(path: string, body?: unknown): Promise<T> {
+  return fetch(`${BASE_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeader() },
+    body: body !== undefined ? JSON.stringify(body) : "{}",
+  }).then(handleResponse<T>)
+}
+
+export function rawDelete<T>(path: string): Promise<T> {
+  return fetch(`${BASE_URL}${path}`, {
+    method: "DELETE",
+    headers: getAuthHeader(),
   }).then(handleResponse<T>)
 }
