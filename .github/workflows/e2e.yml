@@ -35,17 +35,11 @@ jobs:
           BRANCH="${{ github.head_ref || github.ref_name }}"
           echo "::notice::Frontend branch: $BRANCH"
 
-          # URL-encode the branch name (handles claude/ prefix and slashes)
-          ENCODED_BRANCH=$(python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.argv[1], safe=''))" "$BRANCH")
-
-          # Use GitHub API to check if a matching branch exists in the backend repo
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: token $GH_PAT" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/cpflaume/provisioncalculator/branches/${ENCODED_BRANCH}")
-          echo "::notice::Backend branch check HTTP status: $HTTP_STATUS"
-
-          if [ "$HTTP_STATUS" = "200" ]; then
+          # Use git ls-remote to check for matching backend branch.
+          # This handles branch names with slashes without URL-encoding issues.
+          if git ls-remote --exit-code --heads \
+              "https://x-access-token:${GH_PAT}@github.com/cpflaume/provisioncalculator.git" \
+              "$BRANCH" > /dev/null 2>&1; then
             echo "::notice::Matching backend branch '$BRANCH' found — building JAR from source"
 
             git clone --depth=1 --branch "$BRANCH" \
@@ -65,7 +59,7 @@ jobs:
             cp backend-src/build/libs/*.jar e2e/.backend/provisioncalculator.jar
             echo "::notice::Backend JAR built from source successfully"
           else
-            echo "::notice::No matching backend branch (HTTP $HTTP_STATUS) — downloading latest release JAR"
+            echo "::notice::No matching backend branch '$BRANCH' — downloading latest release JAR"
             ASSET_URL=$(curl -s \
               -H "Authorization: token $GH_PAT" \
               -H "Accept: application/vnd.github+json" \
