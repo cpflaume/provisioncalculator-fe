@@ -28,3 +28,5 @@ app:
       email: admin@e2e.test
       password: Admin1234!
       display-name: E2E Admin
+  rate-limit:
+    enabled: false

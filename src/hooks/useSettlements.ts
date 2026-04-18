@@ -8,6 +8,7 @@ export function useSettlements(status?: SettlementStatus) {
   return useQuery({
     queryKey: ["settlements", tenantId, status],
     queryFn: () => getSettlements(tenantId, status),
+    enabled: !!tenantId,
   })
 }
 
@@ -16,6 +17,7 @@ export function useSettlement(settlementId: number) {
   return useQuery({
     queryKey: ["settlement", tenantId, settlementId],
     queryFn: () => getSettlement(tenantId, settlementId),
+    enabled: !!tenantId,
   })
 }
 
@@ -24,6 +26,7 @@ export function useConfig(settlementId: number) {
   return useQuery({
     queryKey: ["config", tenantId, settlementId],
     queryFn: () => getConfig(tenantId, settlementId),
+    enabled: !!tenantId,
   })
 }
 
