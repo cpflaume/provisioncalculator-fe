@@ -12,7 +12,7 @@ export function TenantSelector() {
     return (
       <div className="flex items-center gap-2">
         <span className="text-sm text-gray-500">Mandant:</span>
-        <span className="text-sm font-medium text-gray-700">{tenantId}</span>
+        <span data-testid="tenant-display" className="text-sm font-medium text-gray-700">{tenantId}</span>
       </div>
     )
   }
@@ -24,6 +24,7 @@ export function TenantSelector() {
       </label>
       <select
         id="tenant-select"
+        data-testid="tenant-display"
         value={tenantId}
         onChange={(e) => setTenantId(e.target.value)}
         className="h-8 text-sm rounded-md border border-gray-200 bg-white px-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"

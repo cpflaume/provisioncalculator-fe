@@ -1,6 +1,8 @@
 import { test, expect, request as apiRequest } from '@playwright/test'
+import { ADMIN_EMAIL, ADMIN_PASSWORD } from './helpers/auth'
 
-const API_BASE = 'http://localhost:8080/api/v1/tenants/acme'
+const BACKEND_URL = 'http://localhost:8080'
+const ADMIN_TENANT = 'e2e-admin'
 
 const configFixture = {
   rates: [
@@ -30,19 +32,29 @@ test.describe('Settlement Rejection Flow', () => {
   let settlementId: number
 
   test.beforeAll(async () => {
-    const api = await apiRequest.newContext()
+    const base = await apiRequest.newContext()
+    const loginRes = await base.post(`${BACKEND_URL}/api/auth/login`, {
+      data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
+    })
+    const { token } = await loginRes.json()
+    await base.dispose()
 
-    const createRes = await api.post(`${API_BASE}/settlements`, {
+    const api = await apiRequest.newContext({
+      extraHTTPHeaders: { Authorization: `Bearer ${token}` },
+    })
+    const tenantBase = `${BACKEND_URL}/api/v1/tenants/${ADMIN_TENANT}`
+
+    const createRes = await api.post(`${tenantBase}/settlements`, {
       data: { name: 'Reject Test E2E' },
     })
     const settlement = await createRes.json()
     settlementId = settlement.id
 
-    await api.put(`${API_BASE}/settlements/${settlementId}/config`, {
+    await api.put(`${tenantBase}/settlements/${settlementId}/config`, {
       data: configFixture,
     })
 
-    await api.post(`${API_BASE}/settlements/${settlementId}/purchases`, {
+    await api.post(`${tenantBase}/settlements/${settlementId}/purchases`, {
       data: purchasesFixture,
     })
 

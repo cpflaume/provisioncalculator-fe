@@ -91,7 +91,7 @@ test.describe('TC-04: Mandanten-Isolation (API)', () => {
     await page.waitForURL('/')
 
     // TenantSelector shows only own tenant
-    const tenantDisplay = page.locator('[id="tenant-select"], [class*="text-sm font-medium text-gray-700"]')
+    const tenantDisplay = page.locator('[data-testid="tenant-display"]')
     await expect(tenantDisplay).toContainText('mandant-tester')
   })
 })
