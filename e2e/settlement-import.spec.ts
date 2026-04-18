@@ -1,18 +1,30 @@
 import { test, expect, request as apiRequest } from '@playwright/test'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { ADMIN_EMAIL, ADMIN_PASSWORD } from './helpers/auth'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const API_BASE = 'http://localhost:8080/api/v1/tenants/acme'
+const BACKEND_URL = 'http://localhost:8080'
+const ADMIN_TENANT = 'e2e-admin'
 
 test.describe('Settlement JSON Import Flow', () => {
   let settlementId: number
 
   test.beforeAll(async () => {
-    const api = await apiRequest.newContext()
-    const createRes = await api.post(`${API_BASE}/settlements`, {
-      data: { name: 'Import Test E2E' },
+    const base = await apiRequest.newContext()
+    const loginRes = await base.post(`${BACKEND_URL}/api/auth/login`, {
+      data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
     })
+    const { token } = await loginRes.json()
+    await base.dispose()
+
+    const api = await apiRequest.newContext({
+      extraHTTPHeaders: { Authorization: `Bearer ${token}` },
+    })
+    const createRes = await api.post(
+      `${BACKEND_URL}/api/v1/tenants/${ADMIN_TENANT}/settlements`,
+      { data: { name: 'Import Test E2E' } }
+    )
     const settlement = await createRes.json()
     settlementId = settlement.id
     await api.dispose()

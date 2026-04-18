@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test'
 
+const authFile = 'e2e/.auth.json'
+
 export default defineConfig({
   testDir: './e2e',
   globalSetup: './e2e/global-setup.ts',
@@ -17,13 +19,19 @@ export default defineConfig({
   },
   projects: [
     {
+      name: 'setup',
+      testMatch: /auth\.setup\.ts/,
+    },
+    {
       name: 'chromium',
       use: {
         browserName: 'chromium',
+        storageState: authFile,
         launchOptions: {
           args: ['--no-proxy-server'],
         },
       },
+      dependencies: ['setup'],
     },
   ],
   webServer: [

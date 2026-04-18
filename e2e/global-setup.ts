@@ -52,6 +52,8 @@ function buildFromSource() {
 }
 
 export default async function globalSetup() {
+  mkdirSync(BACKEND_DIR, { recursive: true })
+
   if (existsSync(JAR_PATH)) {
     console.log('[global-setup] Backend JAR already exists, skipping build.')
     return
