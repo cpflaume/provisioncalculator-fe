@@ -33,6 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authVersion.current++
       setUser(null)
       setToken(null)
+      setLoading(false)
       localStorage.removeItem(TOKEN_KEY)
     }
     window.addEventListener("auth-expired", onExpired)
