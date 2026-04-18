@@ -1,8 +1,15 @@
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 
 export function PendingApprovalPage() {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login")
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -20,7 +27,7 @@ export function PendingApprovalPage() {
           Ihr Konto wurde erfolgreich erstellt und wartet auf die Freischaltung durch einen Administrator.
           Sie erhalten Zugang, sobald Ihr Konto aktiviert wurde.
         </p>
-        <Button variant="outline" onClick={logout} className="w-full">
+        <Button variant="outline" onClick={handleLogout} className="w-full">
           Abmelden
         </Button>
       </div>
