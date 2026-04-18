@@ -33,8 +33,9 @@ export function LoginPage() {
         <p className="text-sm text-gray-500 mb-6">Bitte melden Sie sich an, um fortzufahren.</p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
             <Input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -44,8 +45,9 @@ export function LoginPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Passwort</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Passwort</label>
             <Input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

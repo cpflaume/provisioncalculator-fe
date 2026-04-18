@@ -40,8 +40,9 @@ export function RegisterPage() {
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <Input
+              id="name"
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
@@ -51,8 +52,9 @@ export function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">E-Mail</label>
             <Input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -62,10 +64,11 @@ export function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Passwort <span className="text-gray-400">(min. 8 Zeichen)</span>
             </label>
             <Input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
