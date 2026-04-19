@@ -62,6 +62,7 @@ export interface SubmitPurchasesRequest {
 export interface PurchaseResponse {
   settlementId: number
   accepted: number
+  ids: number[]
   submittedAt: string
 }
 

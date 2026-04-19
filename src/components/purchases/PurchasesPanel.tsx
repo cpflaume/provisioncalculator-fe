@@ -1,16 +1,18 @@
 import { useState, useMemo, useRef } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
 import { PurchaseStats } from "./PurchaseStats"
 import { PurchaseTable } from "./PurchaseTable"
 import { AddPurchaseForm } from "./AddPurchaseForm"
 import { PurchaseImport } from "./PurchaseImport"
-import { usePurchases, useSubmitPurchases } from "@/hooks/usePurchases"
+import { usePurchases, useSubmitPurchases, useDeletePurchase } from "@/hooks/usePurchases"
 import { useToast } from "@/components/ui/use-toast"
-import { Upload } from "lucide-react"
+import { Trash2, Upload } from "lucide-react"
 import type { PurchaseRequest, SubmitPurchasesRequest, TreeNodeResponse } from "@/api/types"
 
 interface RecentPurchase {
   id: number
+  purchaseId: number
   purchase: PurchaseRequest
   fading: boolean
 }
@@ -31,6 +33,7 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
   const nextId = useRef(0)
   const { data: purchasesData, isLoading } = usePurchases(settlementId, page)
   const submitMutation = useSubmitPurchases(settlementId)
+  const deleteMutation = useDeletePurchase(settlementId)
   const { toast } = useToast()
 
   const customerIds = useMemo(
@@ -38,9 +41,9 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
     [treeNodes],
   )
 
-  const addRecent = (purchase: PurchaseRequest) => {
+  const addRecent = (purchase: PurchaseRequest, purchaseId: number) => {
     const id = nextId.current++
-    setRecentPurchases((prev) => [...prev, { id, purchase, fading: false }])
+    setRecentPurchases((prev) => [...prev, { id, purchaseId, purchase, fading: false }])
     setTimeout(() => {
       setRecentPurchases((prev) =>
         prev.map((p) => (p.id === id ? { ...p, fading: true } : p))
@@ -55,8 +58,8 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
     submitMutation.mutate(
       { purchases: [purchase] },
       {
-        onSuccess: () => {
-          addRecent(purchase)
+        onSuccess: (result) => {
+          addRecent(purchase, result.ids[0])
           toast("Einkauf gespeichert", "success")
         },
       },
@@ -67,6 +70,15 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
     submitMutation.mutate(data, {
       onSuccess: (result) => {
         toast(`${result.accepted} Einkäufe importiert`, "success")
+      },
+    })
+  }
+
+  const handleDelete = (purchaseId: number) => {
+    deleteMutation.mutate(purchaseId, {
+      onSuccess: () => {
+        setRecentPurchases((prev) => prev.filter((r) => r.purchaseId !== purchaseId))
+        toast("Einkauf gelöscht", "success")
       },
     })
   }
@@ -108,6 +120,7 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
               page={page}
               totalPages={purchasesData?.totalPages ?? 0}
               onPageChange={setPage}
+              onDelete={!readOnly ? handleDelete : undefined}
             />
           </div>
         </TabsContent>
@@ -128,6 +141,7 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
                         <th className="px-3 py-2 text-left font-medium">Käufer</th>
                         <th className="px-3 py-2 text-right font-medium">Betrag</th>
                         <th className="px-3 py-2 text-left font-medium">Datum</th>
+                        <th className="w-12" />
                       </tr>
                     </thead>
                     <tbody>
@@ -140,6 +154,16 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
                           <td className="px-3 py-2">{r.purchase.buyerCustomerId}</td>
                           <td className="px-3 py-2 text-right">{formatCurrency(r.purchase.amount)}</td>
                           <td className="px-3 py-2">{r.purchase.purchasedAt}</td>
+                          <td className="px-3 py-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 text-gray-400 hover:text-red-500"
+                              onClick={() => handleDelete(r.purchaseId)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>

@@ -125,6 +125,13 @@ export function apiPut<T>(tenantId: string, path: string, body: unknown): Promis
   }).then(handleResponse<T>)
 }
 
+export function apiDelete<T>(tenantId: string, path: string): Promise<T> {
+  return fetch(buildUrl(tenantId, path), {
+    method: "DELETE",
+    headers: getAuthHeader(),
+  }).then(handleResponse<T>)
+}
+
 export function rawGet<T>(path: string): Promise<T> {
   return fetch(`${BASE_URL}${path}`, {
     headers: getAuthHeader(),

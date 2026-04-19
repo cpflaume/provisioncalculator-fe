@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTenant } from "./useTenant"
-import { getPurchases, submitPurchases } from "@/api/purchases"
+import { getPurchases, submitPurchases, deletePurchase } from "@/api/purchases"
 import type { SubmitPurchasesRequest } from "@/api/types"
 
 export function usePurchases(settlementId: number, page = 0, size = 20) {
@@ -17,6 +17,19 @@ export function useSubmitPurchases(settlementId: number) {
   return useMutation({
     mutationFn: (request: SubmitPurchasesRequest) =>
       submitPurchases(tenantId, settlementId, request),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["purchases", tenantId, settlementId] })
+      queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })
+      queryClient.invalidateQueries({ queryKey: ["settlement-metrics", tenantId, settlementId] })
+    },
+  })
+}
+
+export function useDeletePurchase(settlementId: number) {
+  const { tenantId } = useTenant()
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (purchaseId: number) => deletePurchase(tenantId, settlementId, purchaseId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["purchases", tenantId, settlementId] })
       queryClient.invalidateQueries({ queryKey: ["tenant-overview", tenantId] })

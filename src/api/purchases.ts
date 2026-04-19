@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./client"
+import { apiGet, apiPost, apiDelete } from "./client"
 import type { PaginatedPurchases, PurchaseResponse, SubmitPurchasesRequest } from "./types"
 
 export function getPurchases(
@@ -16,4 +16,12 @@ export function submitPurchases(
   request: SubmitPurchasesRequest,
 ): Promise<PurchaseResponse> {
   return apiPost(tenantId, `/settlements/${settlementId}/purchases`, request)
+}
+
+export function deletePurchase(
+  tenantId: string,
+  settlementId: number,
+  purchaseId: number,
+): Promise<void> {
+  return apiDelete(tenantId, `/settlements/${settlementId}/purchases/${purchaseId}`)
 }
