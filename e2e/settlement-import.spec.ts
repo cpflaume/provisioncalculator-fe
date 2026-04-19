@@ -55,12 +55,15 @@ test.describe('Settlement JSON Import Flow', () => {
     await page.getByRole('tab', { name: 'Einkäufe' }).click()
     await page.getByRole('tab', { name: 'Import' }).click()
     const purchasesInput = page.locator('input[type="file"]')
-    await purchasesInput.setInputFiles(path.resolve(__dirname, 'fixtures/purchases.json'))
-
-    // Submit imported purchases
-    await expect(page.getByText('4 Einkauf/Einkäufe bereit zum Senden')).toBeVisible()
-    await page.getByRole('button', { name: 'Einkäufe senden' }).click()
-    await expect(page.getByText(/4 Einkäufe gesendet/)).toBeVisible({ timeout: 10_000 })
+    // File load triggers immediate API submit — register listener before setting file
+    const [importResp] = await Promise.all([
+      page.waitForResponse(
+        r => r.url().includes('/purchases') && r.request().method() === 'POST',
+        { timeout: 10_000 },
+      ),
+      purchasesInput.setInputFiles(path.resolve(__dirname, 'fixtures/purchases.json')),
+    ])
+    expect(importResp.status()).toBe(202)
 
     // Calculate and verify results
     await page.getByRole('button', { name: 'Berechnen' }).click()

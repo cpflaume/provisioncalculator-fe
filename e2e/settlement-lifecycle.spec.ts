@@ -95,16 +95,25 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
     const amountInput = page.getByPlaceholder('0,00')
     const dateInput = page.locator('input[type="datetime-local"]')
 
+    const waitForPurchaseSave = () =>
+      page.waitForResponse(
+        r => r.url().includes('/purchases') && r.request().method() === 'POST',
+        { timeout: 10_000 },
+      )
+
     for (const p of purchases) {
       await buyerInput.fill(p.buyer)
       await amountInput.fill(p.amount)
       await dateInput.fill(p.date)
-      await page.getByRole('tabpanel').getByRole('button', { name: 'Hinzufügen' }).click()
+      const [resp] = await Promise.all([
+        waitForPurchaseSave(),
+        page.getByRole('tabpanel').getByRole('button', { name: 'Hinzufügen' }).click(),
+      ])
+      expect(resp.status()).toBe(202)
     }
 
-    await expect(page.getByText('4 Einkauf/Einkäufe bereit zum Senden')).toBeVisible()
-    await page.getByRole('button', { name: 'Einkäufe senden' }).click()
-    await expect(page.getByText(/4 Einkäufe gesendet/)).toBeVisible({ timeout: 10_000 })
+    // Last added purchase should appear in the recently-added list (4 rows)
+    await expect(page.locator('td').filter({ hasText: /^B$/ })).toBeVisible()
   })
 
   test('Berechnen und Ergebnisse prüfen', async ({ page }) => {
