@@ -1,45 +1,51 @@
 import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
 import { RatesEditor } from "./RatesEditor"
 import { TreeEditor } from "./TreeEditor"
 import { TreeVisualization } from "./TreeVisualization"
 import { TreeImport } from "./TreeImport"
-import { Save, Upload } from "lucide-react"
+import { Upload } from "lucide-react"
 import type { RateResponse, TreeNodeResponse, GetConfigResponse, ConfigureSettingsRequest } from "@/api/types"
 
 interface ConfigPanelProps {
-  config: GetConfigResponse | undefined
+  config: GetConfigResponse
   onSave: (request: ConfigureSettingsRequest) => void
-  isSaving: boolean
   readOnly: boolean
 }
 
-export function ConfigPanel({ config, onSave, isSaving, readOnly }: ConfigPanelProps) {
-  const [rates, setRates] = useState<RateResponse[]>(config?.rates ?? [])
-  const [nodes, setNodes] = useState<TreeNodeResponse[]>(config?.tree ?? [])
-  const [prevConfig, setPrevConfig] = useState(config)
+export function ConfigPanel({ config, onSave, readOnly }: ConfigPanelProps) {
+  const [rates, setRates] = useState<RateResponse[]>(config.rates)
+  const [nodes, setNodes] = useState<TreeNodeResponse[]>(config.tree)
 
-  if (config !== prevConfig) {
-    setPrevConfig(config)
-    if (config) {
-      setRates(config.rates)
-      setNodes(config.tree)
-    }
+  const handleRateAdd = (rate: RateResponse) => {
+    const newRates = [...rates, rate]
+    setRates(newRates)
+    onSave({ rates: newRates, tree: nodes })
+  }
+
+  const handleRateRemove = (index: number) => {
+    const newRates = rates.filter((_, i) => i !== index)
+    setRates(newRates)
+    onSave({ rates: newRates, tree: nodes })
+  }
+
+  const handleTreeAdd = (node: TreeNodeResponse) => {
+    const newNodes = [...nodes, node]
+    setNodes(newNodes)
+    onSave({ rates, tree: newNodes })
+  }
+
+  const handleTreeRemove = (customerId: string) => {
+    const newNodes = nodes.filter((n) => n.customerId !== customerId)
+    setNodes(newNodes)
+    onSave({ rates, tree: newNodes })
   }
 
   const handleImport = (data: ConfigureSettingsRequest) => {
     if (data.rates.length > 0) setRates(data.rates)
     setNodes(data.tree)
+    onSave(data)
   }
-
-  const handleSave = () => {
-    onSave({ rates, tree: nodes })
-  }
-
-  const hasChanges =
-    JSON.stringify(rates) !== JSON.stringify(config?.rates ?? []) ||
-    JSON.stringify(nodes) !== JSON.stringify(config?.tree ?? [])
 
   return (
     <div className="space-y-6">
@@ -58,8 +64,8 @@ export function ConfigPanel({ config, onSave, isSaving, readOnly }: ConfigPanelP
 
         <TabsContent value="editor">
           <div className="space-y-6 mt-4">
-            <RatesEditor rates={rates} onChange={setRates} readOnly={readOnly} />
-            <TreeEditor nodes={nodes} onChange={setNodes} readOnly={readOnly} />
+            <RatesEditor rates={rates} onAdd={handleRateAdd} onRemove={handleRateRemove} readOnly={readOnly} />
+            <TreeEditor nodes={nodes} onAdd={handleTreeAdd} onRemove={handleTreeRemove} readOnly={readOnly} />
           </div>
         </TabsContent>
 
@@ -77,15 +83,6 @@ export function ConfigPanel({ config, onSave, isSaving, readOnly }: ConfigPanelP
           </TabsContent>
         )}
       </Tabs>
-
-      {!readOnly && (
-        <div className="flex justify-end">
-          <Button onClick={handleSave} disabled={isSaving || !hasChanges}>
-            <Save className="h-4 w-4" />
-            {isSaving ? "Wird gespeichert..." : "Konfiguration speichern"}
-          </Button>
-        </div>
-      )}
     </div>
   )
 }
