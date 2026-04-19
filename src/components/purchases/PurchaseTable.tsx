@@ -1,6 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react"
 import type { Purchase } from "@/api/types"
 
 interface PurchaseTableProps {
@@ -8,6 +8,7 @@ interface PurchaseTableProps {
   page: number
   totalPages: number
   onPageChange: (page: number) => void
+  onDelete?: (id: number) => void
 }
 
 function formatCurrency(value: number): string {
@@ -24,7 +25,7 @@ function formatDate(iso: string): string {
   }).format(new Date(iso))
 }
 
-export function PurchaseTable({ purchases, page, totalPages, onPageChange }: PurchaseTableProps) {
+export function PurchaseTable({ purchases, page, totalPages, onPageChange, onDelete }: PurchaseTableProps) {
   if (purchases.length === 0) {
     return (
       <div className="rounded-md border border-gray-200 p-8 text-center text-sm text-gray-500">
@@ -41,6 +42,7 @@ export function PurchaseTable({ purchases, page, totalPages, onPageChange }: Pur
             <TableHead>Käufer</TableHead>
             <TableHead className="text-right">Betrag</TableHead>
             <TableHead>Kaufdatum</TableHead>
+            {onDelete && <TableHead className="w-12" />}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -49,6 +51,18 @@ export function PurchaseTable({ purchases, page, totalPages, onPageChange }: Pur
               <TableCell className="font-medium">{p.buyerCustomerId}</TableCell>
               <TableCell className="text-right">{formatCurrency(p.amount)}</TableCell>
               <TableCell>{formatDate(p.purchasedAt)}</TableCell>
+              {onDelete && (
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-gray-400 hover:text-red-500"
+                    onClick={() => onDelete(p.id)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
