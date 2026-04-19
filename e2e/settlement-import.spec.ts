@@ -63,7 +63,7 @@ test.describe('Settlement JSON Import Flow', () => {
       ),
       purchasesInput.setInputFiles(path.resolve(__dirname, 'fixtures/purchases.json')),
     ])
-    expect(importResp.status()).toBe(200)
+    expect(importResp.status()).toBe(202)
 
     // Calculate and verify results
     await page.getByRole('button', { name: 'Berechnen' }).click()

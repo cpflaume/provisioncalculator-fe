@@ -109,11 +109,11 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
         waitForPurchaseSave(),
         page.getByRole('tabpanel').getByRole('button', { name: 'Hinzufügen' }).click(),
       ])
-      expect(resp.status()).toBe(200)
+      expect(resp.status()).toBe(202)
     }
 
-    // Last added purchase should appear in the recently-added list
-    await expect(page.getByText('B')).toBeVisible()
+    // Last added purchase should appear in the recently-added list (4 rows)
+    await expect(page.locator('td').filter({ hasText: /^B$/ })).toBeVisible()
   })
 
   test('Berechnen und Ergebnisse prüfen', async ({ page }) => {
