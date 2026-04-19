@@ -7,9 +7,10 @@ import type { PurchaseRequest } from "@/api/types"
 interface AddPurchaseFormProps {
   treeCustomerIds: string[]
   onAdd: (purchase: PurchaseRequest) => void
+  isSaving?: boolean
 }
 
-export function AddPurchaseForm({ treeCustomerIds, onAdd }: AddPurchaseFormProps) {
+export function AddPurchaseForm({ treeCustomerIds, onAdd, isSaving }: AddPurchaseFormProps) {
   const [buyerId, setBuyerId] = useState("")
   const [amount, setAmount] = useState("")
   const [date, setDate] = useState("")
@@ -82,9 +83,9 @@ export function AddPurchaseForm({ treeCustomerIds, onAdd }: AddPurchaseFormProps
             onChange={(e) => setDate(e.target.value)}
           />
         </div>
-        <Button onClick={handleSubmit} disabled={!isValid}>
+        <Button onClick={handleSubmit} disabled={!isValid || isSaving}>
           <Plus className="h-4 w-4" />
-          Hinzufügen
+          {isSaving ? "Wird gespeichert..." : "Hinzufügen"}
         </Button>
       </div>
     </div>
