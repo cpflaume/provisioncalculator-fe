@@ -118,11 +118,15 @@ export function SettlementPage() {
           </TabsList>
 
           <TabsContent value="config">
-            <ConfigPanel
-              config={config}
-              onSave={handleSaveConfig}
-              readOnly={isApproved}
-            />
+            {config ? (
+              <ConfigPanel
+                config={config}
+                onSave={handleSaveConfig}
+                readOnly={isApproved}
+              />
+            ) : (
+              <Skeleton className="h-64 w-full mt-4" />
+            )}
           </TabsContent>
 
           <TabsContent value="purchases">

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react"
+import { useState } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { RatesEditor } from "./RatesEditor"
 import { TreeEditor } from "./TreeEditor"
@@ -8,23 +8,14 @@ import { Upload } from "lucide-react"
 import type { RateResponse, TreeNodeResponse, GetConfigResponse, ConfigureSettingsRequest } from "@/api/types"
 
 interface ConfigPanelProps {
-  config: GetConfigResponse | undefined
+  config: GetConfigResponse
   onSave: (request: ConfigureSettingsRequest) => void
   readOnly: boolean
 }
 
 export function ConfigPanel({ config, onSave, readOnly }: ConfigPanelProps) {
-  const [rates, setRates] = useState<RateResponse[]>(config?.rates ?? [])
-  const [nodes, setNodes] = useState<TreeNodeResponse[]>(config?.tree ?? [])
-  // Initialize from config only once (first load from undefined → defined).
-  // Deliberately NOT syncing on subsequent refetches to avoid overwriting
-  // in-progress local edits after auto-save triggers a cache invalidation.
-  const initializedRef = useRef(config !== undefined)
-  if (!initializedRef.current && config !== undefined) {
-    initializedRef.current = true
-    setRates(config.rates)
-    setNodes(config.tree)
-  }
+  const [rates, setRates] = useState<RateResponse[]>(config.rates)
+  const [nodes, setNodes] = useState<TreeNodeResponse[]>(config.tree)
 
   const handleRateAdd = (rate: RateResponse) => {
     const newRates = [...rates, rate]
