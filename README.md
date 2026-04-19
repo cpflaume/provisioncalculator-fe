@@ -2,6 +2,12 @@
 
 A React single-page application for managing multi-level commission (provision) settlements. Visualises the customer hierarchy tree, imports purchases, and displays calculated commission results.
 
+## Live Demo
+
+Check it out at **https://provisioncalculator.copf-demo.de**
+
+> The initial API product was a little boring on its own, so this frontend was added on top — tree visualisation, charts, settlement lifecycle management and all.
+
 ## What it does
 
 - Create and configure settlements with a customer hierarchy tree
@@ -44,3 +50,7 @@ npm run test:e2e
 ## License
 
 MIT — see [LICENSE](LICENSE)
+
+---
+
+> Disclaimer: This entire project was coded from a mobile phone using [Claude Code](https://claude.ai/code). It was good fun.
