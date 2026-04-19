@@ -14,9 +14,19 @@ import { RegisterPage } from "@/pages/RegisterPage"
 import { PendingApprovalPage } from "@/pages/PendingApprovalPage"
 import { AdminPage } from "@/pages/AdminPage"
 
+const TENANT_STORAGE_KEY = "selectedTenant"
+
 function AuthenticatedApp() {
   const { user } = useAuth()
-  const [selectedTenant, setSelectedTenant] = useState("")
+  const [selectedTenant, setSelectedTenant] = useState(
+    () => localStorage.getItem(TENANT_STORAGE_KEY) ?? ""
+  )
+
+  const setTenantId = (id: string) => {
+    localStorage.setItem(TENANT_STORAGE_KEY, id)
+    setSelectedTenant(id)
+  }
+
   // Derive active tenant: respect manual selection only if user still has that tenant
   const tenantId =
     selectedTenant && user?.tenantIds.includes(selectedTenant)
@@ -24,7 +34,7 @@ function AuthenticatedApp() {
       : (user?.tenantIds[0] ?? "")
 
   return (
-    <TenantContext.Provider value={{ tenantId, setTenantId: setSelectedTenant }}>
+    <TenantContext.Provider value={{ tenantId, setTenantId }}>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
