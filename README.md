@@ -1,4 +1,4 @@
-# 🖥️ Provision Calculator — Frontend
+# Provision Calculator — Frontend
 
 > A React SPA for managing multi-level commission settlements.  
 > Because someone looked at the raw API responses and said "this needs a tree view."
