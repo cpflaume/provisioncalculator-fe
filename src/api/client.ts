@@ -42,7 +42,10 @@ const errorMessages: Record<string, string> = {
   "Unexpected error": "Ein unerwarteter Fehler ist aufgetreten.",
 }
 
-function translateError(message: string): string {
+const FALLBACK_ERROR_MESSAGE = "Ein unerwarteter Fehler ist aufgetreten."
+
+function translateError(message: string | undefined | null): string {
+  if (!message) return FALLBACK_ERROR_MESSAGE
   if (errorMessages[message]) return errorMessages[message]
 
   for (const [key, translation] of Object.entries(errorMessages)) {
@@ -65,8 +68,8 @@ function translateError(message: string): string {
 }
 
 interface ErrorResponseBody {
-  status: number
-  message: string
+  status?: number
+  message?: string
 }
 
 async function handleResponse<T>(response: Response): Promise<T> {
@@ -78,10 +81,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get("content-type")
     if (contentType?.includes("application/json")) {
       try {
-        const body: ErrorResponseBody = JSON.parse(text)
+        const body = JSON.parse(text) as ErrorResponseBody
         throw new ApiError(response.status, translateError(body.message))
       } catch (e) {
         if (e instanceof ApiError) throw e
+        // JSON.parse failed — fall through to use the raw text
       }
     }
     throw new ApiError(response.status, translateError(text))

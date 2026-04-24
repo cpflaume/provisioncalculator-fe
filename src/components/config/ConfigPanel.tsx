@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { RatesEditor } from "./RatesEditor"
 import { TreeEditor } from "./TreeEditor"
@@ -16,6 +16,14 @@ interface ConfigPanelProps {
 export function ConfigPanel({ config, onSave, readOnly }: ConfigPanelProps) {
   const [rates, setRates] = useState<RateResponse[]>(config.rates)
   const [nodes, setNodes] = useState<TreeNodeResponse[]>(config.tree)
+
+  // Re-sync local state when the underlying config changes (e.g. after a
+  // refetch triggered by another mutation). Without this, the editor would
+  // silently show stale data once the cache updates.
+  useEffect(() => {
+    setRates(config.rates)
+    setNodes(config.tree)
+  }, [config.updatedAt, config.rates, config.tree])
 
   const handleRateAdd = (rate: RateResponse) => {
     const newRates = [...rates, rate]

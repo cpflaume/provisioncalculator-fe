@@ -44,9 +44,9 @@ export function Sidebar() {
         aria-label="Hauptnavigation"
       >
         <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-          <h1 className={cn("text-lg font-bold text-gray-900", !expanded && "md:hidden")}>
-            <span className={cn(expanded ? "inline" : "hidden", "md:inline")}>Provisionsrechner</span>
-            <span className={cn(expanded ? "hidden" : "inline", "md:hidden")}>P</span>
+          <h1 className="text-lg font-bold text-gray-900">
+            <span className={cn("md:inline", expanded ? "inline" : "hidden")}>Provisionsrechner</span>
+            <span className={cn("md:hidden", expanded ? "hidden" : "inline")}>P</span>
           </h1>
         </div>
         <nav className={cn("flex-1 space-y-1", expanded ? "p-3" : "p-2 md:p-3")}>
