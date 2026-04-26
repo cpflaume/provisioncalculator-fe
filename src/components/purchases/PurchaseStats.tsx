@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card"
 import { ShoppingCart, Euro } from "lucide-react"
+import { formatCurrency } from "@/lib/format"
 
 interface PurchaseStatsProps {
   totalCount: number
@@ -7,11 +8,6 @@ interface PurchaseStatsProps {
 }
 
 export function PurchaseStats({ totalCount, totalAmount }: PurchaseStatsProps) {
-  const formattedAmount = new Intl.NumberFormat("de-DE", {
-    style: "currency",
-    currency: "EUR",
-  }).format(totalAmount)
-
   return (
     <div className="grid grid-cols-2 gap-4">
       <Card className="p-4">
@@ -32,7 +28,7 @@ export function PurchaseStats({ totalCount, totalAmount }: PurchaseStatsProps) {
           </div>
           <div>
             <p className="text-sm text-gray-500">Gesamtumsatz</p>
-            <p className="text-2xl font-bold text-gray-900">{formattedAmount}</p>
+            <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalAmount)}</p>
           </div>
         </div>
       </Card>

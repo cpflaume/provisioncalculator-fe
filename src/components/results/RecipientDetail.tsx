@@ -1,14 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Card } from "@/components/ui/card"
 import { useRecipientDetail } from "@/hooks/useCalculation"
+import { formatCurrency } from "@/lib/format"
 
 interface RecipientDetailProps {
   settlementId: number
   customerId: string
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
 }
 
 export function RecipientDetail({ settlementId, customerId }: RecipientDetailProps) {
