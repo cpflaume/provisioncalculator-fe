@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ChevronDown, ChevronUp } from "lucide-react"
+import { formatCurrency } from "@/lib/format"
 import type { RecipientTotal } from "@/api/types"
 
 interface RecipientTableProps {
@@ -11,10 +12,6 @@ interface RecipientTableProps {
 
 type SortField = "customerId" | "totalCommission"
 type SortDir = "asc" | "desc"
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
 
 export function RecipientTable({ results, onSelect, selectedId }: RecipientTableProps) {
   const [sortField, setSortField] = useState<SortField>("totalCommission")
