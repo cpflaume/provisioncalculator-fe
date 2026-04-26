@@ -3,10 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import type { PurchaseAnalysis } from "@/api/types"
 import { ShoppingCart, AlertTriangle } from "lucide-react"
-
-function fmt(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
+import { formatCurrency } from "@/lib/format"
 
 interface PurchaseAnalysisCardProps {
   data: PurchaseAnalysis
@@ -22,12 +19,12 @@ export function PurchaseAnalysisCard({ data }: PurchaseAnalysisCardProps) {
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: "Summe", value: fmt(data.totalAmount) },
+          { label: "Summe", value: formatCurrency(data.totalAmount) },
           { label: "Anzahl", value: data.count.toString() },
-          { label: "Durchschnitt", value: fmt(data.average) },
-          { label: "Min", value: fmt(data.min) },
-          { label: "Max", value: fmt(data.max) },
-          { label: "Std.-Abw.", value: fmt(data.stdDev) },
+          { label: "Durchschnitt", value: formatCurrency(data.average) },
+          { label: "Min", value: formatCurrency(data.min) },
+          { label: "Max", value: formatCurrency(data.max) },
+          { label: "Std.-Abw.", value: formatCurrency(data.stdDev) },
         ].map((stat) => (
           <Card key={stat.label} className="p-3">
             <p className="text-xs text-gray-500">{stat.label}</p>
@@ -58,7 +55,7 @@ export function PurchaseAnalysisCard({ data }: PurchaseAnalysisCardProps) {
                 <TableRow key={o.purchaseId}>
                   <TableCell>{o.purchaseId}</TableCell>
                   <TableCell className="font-medium">{o.buyerCustomerId}</TableCell>
-                  <TableCell className="text-right">{fmt(o.amount)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(o.amount)}</TableCell>
                   <TableCell className="text-right">
                     <Badge variant={o.deviationFactor > 0 ? "destructive" : "secondary"}>
                       {o.deviationFactor > 0 ? "+" : ""}{o.deviationFactor.toFixed(1)}&sigma;
