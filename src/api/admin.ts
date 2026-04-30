@@ -1,13 +1,9 @@
 import { rawGet, rawPost, rawDelete } from "./client"
+import type { AuthUser } from "@/context/auth-context-def"
 
-export interface AdminUser {
-  userId: number
-  email: string
-  displayName: string
-  role: "ADMIN" | "USER"
-  status: "PENDING" | "ACTIVE" | "DISABLED"
-  tenantIds: string[]
-}
+// Admin endpoints return the same user shape as /auth/me, so we reuse the
+// canonical AuthUser type instead of duplicating the interface.
+export type AdminUser = AuthUser
 
 export interface AdminTenant {
   id: string

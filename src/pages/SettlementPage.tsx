@@ -120,6 +120,7 @@ export function SettlementPage() {
           <TabsContent value="config">
             {config ? (
               <ConfigPanel
+                key={config.updatedAt}
                 config={config}
                 onSave={handleSaveConfig}
                 readOnly={isApproved}

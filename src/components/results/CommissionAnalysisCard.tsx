@@ -3,10 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import type { CommissionAnalysis } from "@/api/types"
 import { TrendingUp, AlertTriangle } from "lucide-react"
-
-function fmt(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
+import { formatCurrency } from "@/lib/format"
 
 interface CommissionAnalysisCardProps {
   data: CommissionAnalysis
@@ -23,7 +20,7 @@ export function CommissionAnalysisCard({ data }: CommissionAnalysisCardProps) {
       <div className="grid grid-cols-2 gap-3">
         <Card className="p-3">
           <p className="text-xs text-gray-500">Gesamtprovision</p>
-          <p className="text-sm font-semibold text-gray-900 mt-0.5">{fmt(data.totalCommission)}</p>
+          <p className="text-sm font-semibold text-gray-900 mt-0.5">{formatCurrency(data.totalCommission)}</p>
         </Card>
         <Card className="p-3">
           <p className="text-xs text-gray-500">Empfaenger</p>
@@ -46,7 +43,7 @@ export function CommissionAnalysisCard({ data }: CommissionAnalysisCardProps) {
               {data.byDepth.map((bucket) => (
                 <TableRow key={bucket.depth ?? "null"}>
                   <TableCell>{bucket.depth ?? "—"}</TableCell>
-                  <TableCell className="text-right">{fmt(bucket.totalAmount)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(bucket.totalAmount)}</TableCell>
                   <TableCell className="text-right">{bucket.count}</TableCell>
                 </TableRow>
               ))}
@@ -75,7 +72,7 @@ export function CommissionAnalysisCard({ data }: CommissionAnalysisCardProps) {
               {data.outliers.map((o) => (
                 <TableRow key={o.recipientCustomerId}>
                   <TableCell className="font-medium">{o.recipientCustomerId}</TableCell>
-                  <TableCell className="text-right">{fmt(o.totalCommission)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(o.totalCommission)}</TableCell>
                   <TableCell className="text-right">
                     <Badge variant={o.deviationFactor > 0 ? "destructive" : "secondary"}>
                       {o.deviationFactor > 0 ? "+" : ""}{o.deviationFactor.toFixed(1)}&sigma;

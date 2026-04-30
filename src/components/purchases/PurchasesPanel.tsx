@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { PurchaseStats } from "./PurchaseStats"
@@ -8,7 +8,13 @@ import { PurchaseImport } from "./PurchaseImport"
 import { usePurchases, useSubmitPurchases, useDeletePurchase } from "@/hooks/usePurchases"
 import { useToast } from "@/components/ui/use-toast"
 import { Trash2, Upload } from "lucide-react"
+import { formatCurrency } from "@/lib/format"
 import type { PurchaseRequest, SubmitPurchasesRequest, TreeNodeResponse } from "@/api/types"
+
+// How long a just-added purchase stays visible in the "recent" list before
+// the fade-out transition starts, and how long until the row is removed.
+const RECENT_PURCHASE_FADE_AFTER_MS = 55_000
+const RECENT_PURCHASE_REMOVE_AFTER_MS = 60_000
 
 interface RecentPurchase {
   id: number
@@ -23,18 +29,33 @@ interface PurchasesPanelProps {
   readOnly: boolean
 }
 
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
-
 export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesPanelProps) {
   const [page, setPage] = useState(0)
   const [recentPurchases, setRecentPurchases] = useState<RecentPurchase[]>([])
   const nextId = useRef(0)
+  const pendingTimers = useRef(new Set<ReturnType<typeof setTimeout>>())
   const { data: purchasesData, isLoading } = usePurchases(settlementId, page)
   const submitMutation = useSubmitPurchases(settlementId)
   const deleteMutation = useDeletePurchase(settlementId)
   const { toast } = useToast()
+
+  // Clear any pending fade/remove timers on unmount to avoid setState on an
+  // unmounted component.
+  useEffect(() => {
+    const timers = pendingTimers.current
+    return () => {
+      timers.forEach(clearTimeout)
+      timers.clear()
+    }
+  }, [])
+
+  const scheduleTimer = (fn: () => void, delay: number) => {
+    const handle = setTimeout(() => {
+      pendingTimers.current.delete(handle)
+      fn()
+    }, delay)
+    pendingTimers.current.add(handle)
+  }
 
   const customerIds = useMemo(
     () => treeNodes.map((n) => n.customerId),
@@ -44,14 +65,14 @@ export function PurchasesPanel({ settlementId, treeNodes, readOnly }: PurchasesP
   const addRecent = (purchase: PurchaseRequest, purchaseId: number) => {
     const id = nextId.current++
     setRecentPurchases((prev) => [...prev, { id, purchaseId, purchase, fading: false }])
-    setTimeout(() => {
+    scheduleTimer(() => {
       setRecentPurchases((prev) =>
         prev.map((p) => (p.id === id ? { ...p, fading: true } : p))
       )
-    }, 55_000)
-    setTimeout(() => {
+    }, RECENT_PURCHASE_FADE_AFTER_MS)
+    scheduleTimer(() => {
       setRecentPurchases((prev) => prev.filter((p) => p.id !== id))
-    }, 60_000)
+    }, RECENT_PURCHASE_REMOVE_AFTER_MS)
   }
 
   const handleAddPurchase = (purchase: PurchaseRequest) => {
