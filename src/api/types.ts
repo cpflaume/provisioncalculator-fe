@@ -30,7 +30,7 @@ export interface GetConfigResponse {
   rates: RateResponse[]
   tree: TreeNodeResponse[]
   nodeCount: number
-  updatedAt: string
+  updatedAt: string | null
 }
 
 export interface StatusResponse {
