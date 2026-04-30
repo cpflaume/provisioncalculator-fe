@@ -13,6 +13,9 @@ interface ConfigPanelProps {
   readOnly: boolean
 }
 
+// To re-sync local state when the underlying config changes (e.g. after a
+// refetch), the parent passes `key={config.updatedAt}` which remounts this
+// component with fresh initial state.
 export function ConfigPanel({ config, onSave, readOnly }: ConfigPanelProps) {
   const [rates, setRates] = useState<RateResponse[]>(config.rates)
   const [nodes, setNodes] = useState<TreeNodeResponse[]>(config.tree)

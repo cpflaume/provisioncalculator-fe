@@ -1,12 +1,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useAuditTrail } from "@/hooks/useCalculation"
+import { formatCurrency } from "@/lib/format"
 
 interface AuditTrailProps {
   settlementId: number
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
 }
 
 export function AuditTrail({ settlementId }: AuditTrailProps) {

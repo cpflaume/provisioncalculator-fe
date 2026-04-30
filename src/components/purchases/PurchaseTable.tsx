@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Trash2 } from "lucide-react"
+import { formatCurrency, formatDateTime } from "@/lib/format"
 import type { Purchase } from "@/api/types"
 
 interface PurchaseTableProps {
@@ -9,20 +10,6 @@ interface PurchaseTableProps {
   totalPages: number
   onPageChange: (page: number) => void
   onDelete?: (id: number) => void
-}
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
-
-function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso))
 }
 
 export function PurchaseTable({ purchases, page, totalPages, onPageChange, onDelete }: PurchaseTableProps) {
@@ -50,7 +37,7 @@ export function PurchaseTable({ purchases, page, totalPages, onPageChange, onDel
             <TableRow key={p.id}>
               <TableCell className="font-medium">{p.buyerCustomerId}</TableCell>
               <TableCell className="text-right">{formatCurrency(p.amount)}</TableCell>
-              <TableCell>{formatDate(p.purchasedAt)}</TableCell>
+              <TableCell>{formatDateTime(p.purchasedAt)}</TableCell>
               {onDelete && (
                 <TableCell>
                   <Button

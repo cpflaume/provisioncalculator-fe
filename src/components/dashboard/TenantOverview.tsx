@@ -1,10 +1,7 @@
 import { Card } from "@/components/ui/card"
 import { useTenantOverview } from "@/hooks/useMetrics"
 import { FileText, Euro, TrendingUp, Percent } from "lucide-react"
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
+import { formatCurrency } from "@/lib/format"
 
 const statusLabels: Record<string, string> = {
   OPEN: "Offen",

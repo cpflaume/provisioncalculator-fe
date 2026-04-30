@@ -2,10 +2,7 @@ import { Card } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import type { CrossCheckResult } from "@/api/types"
 import { ShieldCheck, ShieldAlert } from "lucide-react"
-
-function fmt(value: number): string {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(value)
-}
+import { formatCurrency } from "@/lib/format"
 
 interface CrossCheckCardProps {
   data: CrossCheckResult
@@ -42,7 +39,7 @@ export function CrossCheckCard({ data }: CrossCheckCardProps) {
       </Card>
 
       <p className="text-sm text-gray-500">
-        Gesamtumsatz: <span className="font-medium text-gray-900">{fmt(data.totalPurchaseVolume)}</span>
+        Gesamtumsatz: <span className="font-medium text-gray-900">{formatCurrency(data.totalPurchaseVolume)}</span>
       </p>
 
       <Table>
@@ -58,16 +55,16 @@ export function CrossCheckCard({ data }: CrossCheckCardProps) {
             <TableRow key={line.depth}>
               <TableCell>{line.depth}</TableCell>
               <TableCell className="text-right">{line.ratePercent.toFixed(2)} %</TableCell>
-              <TableCell className="text-right">{fmt(line.amount)}</TableCell>
+              <TableCell className="text-right">{formatCurrency(line.amount)}</TableCell>
             </TableRow>
           ))}
           <TableRow className="font-semibold border-t-2">
             <TableCell colSpan={2}>Theoretisches Maximum</TableCell>
-            <TableCell className="text-right">{fmt(data.theoreticalTotal)}</TableCell>
+            <TableCell className="text-right">{formatCurrency(data.theoreticalTotal)}</TableCell>
           </TableRow>
           <TableRow className="font-semibold">
             <TableCell colSpan={2}>Tatsaechliche Provision</TableCell>
-            <TableCell className="text-right">{fmt(data.actualTotal)}</TableCell>
+            <TableCell className="text-right">{formatCurrency(data.actualTotal)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
