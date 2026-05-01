@@ -21,10 +21,10 @@ const configFixture = {
 
 const purchasesFixture = {
   purchases: [
-    { buyerCustomerId: 'E', amount: 100, purchasedAt: '2026-03-15T10:00:00' },
-    { buyerCustomerId: 'D', amount: 200, purchasedAt: '2026-03-15T11:00:00' },
-    { buyerCustomerId: 'C', amount: 50, purchasedAt: '2026-03-15T12:00:00' },
-    { buyerCustomerId: 'B', amount: 300, purchasedAt: '2026-03-15T13:00:00' },
+    { buyerCustomerId: 'E', amount: 100, purchasedAt: '2026-03-15T10:00:00Z' },
+    { buyerCustomerId: 'D', amount: 200, purchasedAt: '2026-03-15T11:00:00Z' },
+    { buyerCustomerId: 'C', amount: 50, purchasedAt: '2026-03-15T12:00:00Z' },
+    { buyerCustomerId: 'B', amount: 300, purchasedAt: '2026-03-15T13:00:00Z' },
   ],
 }
 
