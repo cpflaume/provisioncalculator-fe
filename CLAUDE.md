@@ -11,11 +11,51 @@ npm run build
 # 2. Lint
 npm run lint
 
-# 3. E2E tests (requires the backend running on http://localhost:8080)
+# 3. E2E tests (see section below for setup)
 npm run test:e2e
 ```
 
 Do not push if any step fails.
+
+## Running E2E Tests
+
+Playwright starts both the frontend dev server and a local backend JAR automatically.
+Two things must be in place before `npm run test:e2e` will work.
+
+### 1. Backend JAR
+
+Build the JAR from the `provisioncalculator` backend repo (skip tests for speed):
+
+```bash
+# From the provisioncalculator repo root — use system gradle if ./gradlew is missing its wrapper jar
+gradle bootJar -x test
+```
+
+Copy the result into the expected location:
+
+```bash
+mkdir -p e2e/.backend
+cp ../provisioncalculator/build/libs/provisioncalculator-0.0.1-SNAPSHOT.jar e2e/.backend/provisioncalculator.jar
+```
+
+`e2e/.backend/application-test.yml` is already committed and configures the JAR to use
+an in-memory H2 database — no external Postgres needed.
+
+### 2. Playwright Chromium browser
+
+The pre-installed browser lives at `/opt/pw-browsers/chromium_headless_shell-1194`.
+If `npm run test:e2e` fails with "Executable doesn't exist" and mentions a higher revision
+number (e.g. `1217`), create a symlink:
+
+```bash
+# Replace 1217 with the revision Playwright actually asks for
+mkdir -p /opt/pw-browsers/chromium_headless_shell-1217/chrome-headless-shell-linux64
+ln -sf /opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell \
+       /opt/pw-browsers/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell
+```
+
+If the pre-installed revision itself has changed, check `ls /opt/pw-browsers/` and adjust
+the source path accordingly.
 
 ## Commit and Push Policy
 
