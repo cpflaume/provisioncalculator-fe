@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext"
 import { useAuth } from "@/hooks/useAuth"
 import { RequireAuth } from "@/components/auth/RequireAuth"
 import { RequireAdmin } from "@/components/auth/RequireAdmin"
+import { DemoBanner } from "@/components/auth/DemoBanner"
 import { DashboardPage } from "@/pages/DashboardPage"
 import { SettlementPage } from "@/pages/SettlementPage"
 import { NotFoundPage } from "@/pages/NotFoundPage"
@@ -35,6 +36,7 @@ function AuthenticatedApp() {
 
   return (
     <TenantContext.Provider value={{ tenantId, setTenantId }}>
+      <DemoBanner />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
