@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 export function LoginPage() {
-  const { login } = useAuth()
+  const { login, loginAsDemo } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [demoLoading, setDemoLoading] = useState(false)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -23,6 +24,19 @@ export function LoginPage() {
       setError(err instanceof Error ? err.message : "Anmeldung fehlgeschlagen")
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleDemo = async () => {
+    setError("")
+    setDemoLoading(true)
+    try {
+      await loginAsDemo()
+      navigate("/")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Demo-Konto konnte nicht erstellt werden")
+    } finally {
+      setDemoLoading(false)
     }
   }
 
@@ -56,11 +70,31 @@ export function LoginPage() {
             />
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" disabled={loading || demoLoading}>
             {loading ? "Wird angemeldet..." : "Anmelden"}
           </Button>
         </form>
-        <p className="mt-4 text-sm text-gray-500 text-center">
+
+        <div className="my-6 flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs uppercase tracking-wide text-gray-400">oder</span>
+          <div className="flex-1 h-px bg-gray-200" />
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          disabled={loading || demoLoading}
+          onClick={handleDemo}
+        >
+          {demoLoading ? "Demo wird vorbereitet..." : "Demo ausprobieren"}
+        </Button>
+        <p className="mt-2 text-xs text-gray-500 text-center">
+          Temporäres Konto, automatisch gelöscht nach 24 Stunden.
+        </p>
+
+        <p className="mt-6 text-sm text-gray-500 text-center">
           Noch kein Konto?{" "}
           <Link to="/register" className="text-blue-600 hover:underline">
             Registrieren

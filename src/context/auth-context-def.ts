@@ -7,6 +7,8 @@ export interface AuthUser {
   role: "ADMIN" | "USER"
   status: "PENDING" | "ACTIVE" | "DISABLED"
   tenantIds: string[]
+  authProvider: string
+  expiresAt?: string | null
 }
 
 export interface AuthContextValue {
@@ -15,6 +17,7 @@ export interface AuthContextValue {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   register: (email: string, password: string, displayName: string) => Promise<void>
+  loginAsDemo: () => Promise<void>
   logout: () => void
 }
 
@@ -24,5 +27,6 @@ export const AuthContext = createContext<AuthContextValue>({
   loading: true,
   login: async () => {},
   register: async () => {},
+  loginAsDemo: async () => {},
   logout: () => {},
 })

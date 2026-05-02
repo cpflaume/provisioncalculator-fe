@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, type ReactNode } from "react"
-import { login as apiLogin, register as apiRegister, getMe } from "@/api/auth"
+import { login as apiLogin, register as apiRegister, loginAsDemo as apiLoginAsDemo, getMe } from "@/api/auth"
 import { AuthContext, type AuthUser } from "./auth-context-def"
 
 const TOKEN_KEY = "auth_token"
@@ -58,6 +58,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false)
   }
 
+  const loginAsDemo = async () => {
+    authVersion.current++
+    const { token: t, user: u } = await apiLoginAsDemo()
+    localStorage.setItem(TOKEN_KEY, t)
+    setToken(t)
+    setUser(u)
+    setLoading(false)
+  }
+
   const logout = () => {
     authVersion.current++
     localStorage.removeItem(TOKEN_KEY)
@@ -66,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, register, loginAsDemo, logout }}>
       {children}
     </AuthContext.Provider>
   )
