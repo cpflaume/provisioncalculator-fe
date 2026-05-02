@@ -44,8 +44,8 @@ test.describe.serial('Purchase Delete', () => {
       {
         data: {
           purchases: [
-            { buyerCustomerId: 'B', amount: 100, purchasedAt: '2026-03-01T10:00:00' },
-            { buyerCustomerId: 'B', amount: 200, purchasedAt: '2026-03-02T10:00:00' },
+            { buyerCustomerId: 'B', amount: 100, purchasedAt: '2026-03-01T10:00:00Z' },
+            { buyerCustomerId: 'B', amount: 200, purchasedAt: '2026-03-02T10:00:00Z' },
           ],
         },
       },

@@ -27,7 +27,7 @@ export function AddPurchaseForm({ treeCustomerIds, onAdd, isSaving }: AddPurchas
     onAdd({
       buyerCustomerId: buyerId.trim(),
       amount: Number(amount),
-      purchasedAt: new Date(date).toISOString().replace("Z", ""),
+      purchasedAt: new Date(date).toISOString(),
     })
     setBuyerId("")
     setAmount("")

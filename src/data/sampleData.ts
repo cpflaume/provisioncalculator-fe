@@ -1,6 +1,6 @@
 import type { ConfigureSettingsRequest, SubmitPurchasesRequest } from "@/api/types"
 
-// ── Small Example (5 nodes, depth 3, 10 purchases) ──────────────────
+// ── Small Example (5 nodes, depth 3, 10 purchases) ────────────────────────────────────
 
 export const smallTreeConfig: ConfigureSettingsRequest = {
   rates: [],
@@ -15,20 +15,20 @@ export const smallTreeConfig: ConfigureSettingsRequest = {
 
 export const smallPurchases: SubmitPurchasesRequest = {
   purchases: [
-    { buyerCustomerId: "Clara", amount: 300, purchasedAt: "2026-03-01T10:00:00" },
-    { buyerCustomerId: "David", amount: 200, purchasedAt: "2026-03-02T14:30:00" },
-    { buyerCustomerId: "Eva", amount: 300, purchasedAt: "2026-03-03T09:15:00" },
-    { buyerCustomerId: "Ben", amount: 200, purchasedAt: "2026-03-04T16:45:00" },
-    { buyerCustomerId: "Clara", amount: 400, purchasedAt: "2026-03-05T11:20:00" },
-    { buyerCustomerId: "David", amount: 100, purchasedAt: "2026-03-06T08:00:00" },
-    { buyerCustomerId: "Eva", amount: 600, purchasedAt: "2026-03-07T13:45:00" },
-    { buyerCustomerId: "Ben", amount: 200, purchasedAt: "2026-03-08T15:30:00" },
-    { buyerCustomerId: "Anna", amount: 200, purchasedAt: "2026-03-09T10:15:00" },
-    { buyerCustomerId: "David", amount: 300, purchasedAt: "2026-03-10T12:00:00" },
+    { buyerCustomerId: "Clara", amount: 300, purchasedAt: "2026-03-01T10:00:00Z" },
+    { buyerCustomerId: "David", amount: 200, purchasedAt: "2026-03-02T14:30:00Z" },
+    { buyerCustomerId: "Eva", amount: 300, purchasedAt: "2026-03-03T09:15:00Z" },
+    { buyerCustomerId: "Ben", amount: 200, purchasedAt: "2026-03-04T16:45:00Z" },
+    { buyerCustomerId: "Clara", amount: 400, purchasedAt: "2026-03-05T11:20:00Z" },
+    { buyerCustomerId: "David", amount: 100, purchasedAt: "2026-03-06T08:00:00Z" },
+    { buyerCustomerId: "Eva", amount: 600, purchasedAt: "2026-03-07T13:45:00Z" },
+    { buyerCustomerId: "Ben", amount: 200, purchasedAt: "2026-03-08T15:30:00Z" },
+    { buyerCustomerId: "Anna", amount: 200, purchasedAt: "2026-03-09T10:15:00Z" },
+    { buyerCustomerId: "David", amount: 300, purchasedAt: "2026-03-10T12:00:00Z" },
   ],
 }
 
-// ── Large Example (500 nodes, depth 20, 1500 purchases) ─────────────
+// ── Large Example (500 nodes, depth 20, 1500 purchases) ─────────────────────────
 
 // Deterministic PRNG (mulberry32)
 function createRng(seed: number) {
@@ -101,7 +101,7 @@ function generateLargePurchases(treeConfig: ConfigureSettingsRequest): SubmitPur
     return {
       buyerCustomerId: customerIds[buyerIdx],
       amount,
-      purchasedAt: `2026-${mm}-${dd}T${hh}:${min}:00`,
+      purchasedAt: `2026-${mm}-${dd}T${hh}:${min}:00Z`,
     }
   })
 
