@@ -16,8 +16,14 @@ test.describe('TC-08: Demo-Konto', () => {
     // Demo banner must be visible
     await expect(page.getByText('Demo-Konto')).toBeVisible()
 
+    // Read the JWT stored by AuthContext so we can call the API directly
+    const token = await page.evaluate(() => localStorage.getItem('auth_token'))
+    expect(token).not.toBeNull()
+
     // Verify exactly one tenant is assigned via the API
-    const meResponse = await page.request.get('/api/auth/me')
+    const meResponse = await page.request.get('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     expect(meResponse.status()).toBe(200)
     const me = await meResponse.json()
     expect(me.tenantIds).toHaveLength(1)
@@ -32,7 +38,9 @@ test.describe('TC-08: Demo-Konto', () => {
     await expect(page.getByText('Demo Settlement E2E')).toBeVisible()
 
     // Tenant count must still be exactly one after settlement creation
-    const meAfter = await page.request.get('/api/auth/me')
+    const meAfter = await page.request.get('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
     expect(meAfter.status()).toBe(200)
     const meAfterJson = await meAfter.json()
     expect(meAfterJson.tenantIds).toHaveLength(1)
