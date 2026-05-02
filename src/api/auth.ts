@@ -14,6 +14,10 @@ export function register(email: string, password: string, displayName: string): 
   return rawPost<AuthResponse>("/api/auth/register", { email, password, displayName })
 }
 
+export function loginAsDemo(): Promise<AuthResponse> {
+  return rawPost<AuthResponse>("/api/auth/demo", {})
+}
+
 export function getMe(): Promise<AuthUser> {
   return rawGet<AuthUser>("/api/auth/me")
 }
