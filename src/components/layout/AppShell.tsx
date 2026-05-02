@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { Sidebar } from "./Sidebar"
 import { TenantSelector } from "./TenantSelector"
+import { Footer } from "./Footer"
 
 interface AppShellProps {
   children: ReactNode
@@ -17,6 +18,7 @@ export function AppShell({ children }: AppShellProps) {
         <main className="flex-1 overflow-auto p-6">
           {children}
         </main>
+        <Footer />
       </div>
     </div>
   )
