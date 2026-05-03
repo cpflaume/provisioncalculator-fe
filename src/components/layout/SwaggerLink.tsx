@@ -8,7 +8,7 @@ export function SwaggerLink() {
     e.preventDefault()
     const token = localStorage.getItem("auth_token")
     const url = token
-      ? `${API_BASE}/swagger-auth#token=${encodeURIComponent(token)}`
+      ? `${API_BASE}/api/swagger-auth#token=${encodeURIComponent(token)}`
       : `${API_BASE}/swagger-ui.html`
     window.open(url, "_blank", "noopener,noreferrer")
   }
