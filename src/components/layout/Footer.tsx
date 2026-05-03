@@ -13,8 +13,8 @@ export function Footer() {
 
   return (
     <footer className="h-8 border-t border-gray-200 bg-white px-6 flex items-center justify-end text-xs text-gray-500 gap-4">
-      <span>Frontend v{__APP_VERSION__}</span>
-      <span>Backend v{backendVersion}</span>
+      <span>Frontend {__APP_VERSION__}</span>
+      <span>Backend {backendVersion}</span>
     </footer>
   )
 }
