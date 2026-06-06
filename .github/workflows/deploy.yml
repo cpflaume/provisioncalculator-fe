@@ -1,19 +1,21 @@
 name: Deploy Frontend
 
 on:
-  workflow_run:
-    workflows: ["Build, Lint & Test"]
-    branches: [main]
-    types: [completed]
+  push:
+    tags: ['v*']
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to deploy (e.g. v1.2.0)'
+        required: true
+
+permissions:
+  contents: write
 
 jobs:
-  deploy:
+  release-and-dispatch:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
 
     steps:
       - uses: actions/checkout@v6
@@ -29,30 +31,34 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy to OCI
+      - name: Package dist
         env:
-          SSH_KEY: ${{ secrets.ORACLE_VM_SSH_KEY }}
-          HOST: ${{ secrets.OCI_HOST }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          echo "$SSH_KEY" > deploy_key.pem
-          chmod 600 deploy_key.pem
-          SSH_OPTS="-o StrictHostKeyChecking=no -i deploy_key.pem"
+          set -euo pipefail
+          tar -czf "dist-${TAG}.tar.gz" -C dist .
 
-          rsync -avz --delete -e "ssh $SSH_OPTS" dist/ opc@$HOST:/var/www/provisioncalculator-fe/
-
-          # Restore SELinux context for newly deployed files
-          ssh $SSH_OPTS opc@$HOST "sudo restorecon -Rv /var/www/provisioncalculator-fe" || true
-
-          ssh $SSH_OPTS opc@$HOST "sudo systemctl reload caddy"
-
-      - name: Verify
+      - name: Upload tarball to Release
         env:
-          SSH_KEY: ${{ secrets.ORACLE_VM_SSH_KEY }}
-          HOST: ${{ secrets.OCI_HOST }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          SSH_OPTS="-o StrictHostKeyChecking=no -i deploy_key.pem"
-          ssh $SSH_OPTS opc@$HOST "ls -la /var/www/provisioncalculator-fe/index.html"
+          set -euo pipefail
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "dist-${TAG}.tar.gz" --clobber
+          else
+            gh release create "$TAG" "dist-${TAG}.tar.gz" \
+              --title "$TAG" --generate-notes
+          fi
 
-      - name: Cleanup SSH key
-        if: always()
-        run: rm -f deploy_key.pem
+      - name: Trigger gitops deploy
+        env:
+          GITOPS_DISPATCH_TOKEN: ${{ secrets.GITOPS_DISPATCH_TOKEN }}
+          TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          curl --fail -X POST \
+            -H "Authorization: Bearer ${GITOPS_DISPATCH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/cpflaume/copf-demo-gitops/dispatches \
+            -d "{\"event_type\":\"deploy\",\"client_payload\":{\"service\":\"provisioncalculator-fe\",\"environment\":\"production\",\"version\":\"${TAG}\"}}"
