@@ -96,7 +96,26 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+        timeout-minutes: 15
+        run: |
+          set -euo pipefail
+          # Browser downloads from cdn.playwright.dev occasionally stall after
+          # reaching 100% (the subsequent headless-shell/ffmpeg fetch hangs with
+          # no output). Without a per-attempt timeout a single stalled download
+          # burns the whole job budget, so cap each attempt and retry.
+          for attempt in 1 2 3; do
+            echo "::group::Playwright install attempt ${attempt}"
+            if timeout 240 npx playwright install chromium --with-deps; then
+              echo "::endgroup::"
+              echo "::notice::Playwright browsers installed on attempt ${attempt}"
+              exit 0
+            fi
+            echo "::endgroup::"
+            echo "::warning::Playwright install attempt ${attempt} failed or timed out; retrying"
+            sleep 5
+          done
+          echo "::error::Playwright browser install failed after 3 attempts"
+          exit 1
 
       - name: Install Playwright system deps
         if: steps.playwright-cache.outputs.cache-hit == 'true'
