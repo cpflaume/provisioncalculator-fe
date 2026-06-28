@@ -96,6 +96,7 @@ jobs:
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
+        timeout-minutes: 10
         run: npx playwright install chromium --with-deps
 
       - name: Install Playwright system deps
