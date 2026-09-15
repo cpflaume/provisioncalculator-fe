@@ -32,10 +32,20 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
     await page.goto(settlementUrl)
     await expect(page.getByRole('tab', { name: 'Konfiguration' })).toBeVisible()
 
-    // Helper: wait for the next PUT /config response (any status)
+    // Every save (PUT /config) invalidates the config query, triggering a refetch
+    // (GET /config). The new config carries a fresh updatedAt, which remounts the
+    // config panel (key={config.updatedAt}) and resets the inline input fields.
+    // We therefore wait for BOTH the save and the following refetch after each add,
+    // so the next value is typed into the settled, remounted DOM rather than into an
+    // input that the refetch is about to wipe out.
     const waitForSave = () =>
       page.waitForResponse(
         r => r.url().includes('/config') && r.request().method() === 'PUT',
+        { timeout: 10_000 },
+      )
+    const waitForRefetch = () =>
+      page.waitForResponse(
+        r => r.url().includes('/config') && r.request().method() === 'GET',
         { timeout: 10_000 },
       )
 
@@ -43,15 +53,21 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
     // Each save is expected to fail (400) because the tree is still empty —
     // that is intentional; rates are persisted together with the first valid tree save.
     const ratesTable = page.locator('table').first()
-    for (const ratePercent of [5, 3, 1]) {
+    for (const [i, ratePercent] of [5, 3, 1].entries()) {
       const inputRow = ratesTable.locator('tbody tr').last()
       await inputRow.locator('input[type="number"]').last().fill(String(ratePercent))
-      await Promise.all([waitForSave(), ratesTable.getByRole('button', { name: 'Hinzufügen' }).click()])
+      const savePromise = waitForSave()
+      const refetchPromise = waitForRefetch()
+      await ratesTable.getByRole('button', { name: 'Hinzufügen' }).click()
+      await savePromise
+      await refetchPromise
+      // Wait for the remount to settle: the rate row plus the empty input row.
+      await expect(ratesTable.locator('tbody tr')).toHaveCount(i + 2)
     }
 
     // Add 5 tree nodes. Each save now includes the full rates + growing tree.
-    // Waiting for each 200 response before the next click prevents concurrent
-    // saves from racing and overwriting each other on the server.
+    // Waiting for each 200 response (and the refetch) before the next click prevents
+    // concurrent saves from racing and overwriting each other on the server.
     const treeNodes = [
       { id: 'A', parent: '' },
       { id: 'B', parent: 'A' },
@@ -65,15 +81,25 @@ test.describe.serial('Settlement Lifecycle – Happy Path', () => {
     // Tree "Hinzufügen" is always the last button — the rates one lives inside <table>
     const treeAddButton = page.getByRole('button', { name: 'Hinzufügen', exact: true }).last()
 
-    for (const node of treeNodes) {
+    for (const [i, node] of treeNodes.entries()) {
       await customerIdInput.fill(node.id)
       if (node.parent) {
         await parentIdInput.fill(node.parent)
       } else {
         await parentIdInput.clear()
       }
-      const [resp] = await Promise.all([waitForSave(), treeAddButton.click()])
+      // Guard against the remount race: only click once the value has stuck and
+      // the button is enabled.
+      await expect(customerIdInput).toHaveValue(node.id)
+      await expect(treeAddButton).toBeEnabled()
+      const savePromise = waitForSave()
+      const refetchPromise = waitForRefetch()
+      await treeAddButton.click()
+      const resp = await savePromise
       expect(resp.status()).toBe(200)
+      await refetchPromise
+      // Wait for the remount to settle before adding the next node.
+      await expect(page.getByText(`${i + 1} Knoten`)).toBeVisible()
     }
 
     await expect(page.getByText('5 Knoten')).toBeVisible()
